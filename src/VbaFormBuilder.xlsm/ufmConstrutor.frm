@@ -13,8 +13,18 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Dim controles()
-Dim arrayModuloForm(1 To 319)
+Private controles()
+Private arrayModuloForm(1 To 266)
+Private arrayModuloFuncaoLimpaControles(1 To 3)
+Private arrayModuloFuncaoControlDataType(1 To 6)
+Private arrayModuloFuncaoSetValues(1 To 7)
+Private arrayModuloFuncaoGetValues(1 To 6)
+Private nomeCampoChavePrimaria As String
+Private countOfLines As Long
+Private Const colunaCampo As Integer = 1
+Private Const colunaControle As Integer = 2
+Private Const colunaRequerido As Integer = 3
+Private Const colunaEchave As Integer = 4
 
 Public Sub DefineControles(ByRef pControles())
      controles = pControles
@@ -22,7 +32,7 @@ End Sub
 
 Private Sub Init()
     arrayModuloForm(1) = "Public IsCancelled As Boolean"
-    arrayModuloForm(2) = "Private clsAtendimento As Atendimento"
+    arrayModuloForm(2) = "Private cls[NOME_FORM] As [NOME_FORM]"
     arrayModuloForm(3) = "Private modoEdicao As Boolean"
     arrayModuloForm(4) = ""
     arrayModuloForm(5) = "Private Sub AlteraModo(ByVal Edicao As Boolean)"
@@ -35,7 +45,7 @@ Private Sub Init()
     arrayModuloForm(12) = "    Next"
     arrayModuloForm(13) = "    "
     arrayModuloForm(14) = "    'excessão"
-    arrayModuloForm(15) = "    txtId.Enabled = False"
+    arrayModuloForm(15) = "    txt[CHAVE_PRIMARIA].Enabled = False"
     arrayModuloForm(16) = "    "
     arrayModuloForm(17) = "    'botoes de navegacao"
     arrayModuloForm(18) = "    btnOk.Enabled = Edicao"
@@ -48,37 +58,37 @@ Private Sub Init()
     arrayModuloForm(25) = "    optAlterar.Enabled = Not Edicao"
     arrayModuloForm(26) = "    optExcluir.Enabled = Not Edicao"
     arrayModuloForm(27) = "    optNovo.Enabled = Not Edicao"
-    arrayModuloForm(28) = "    """
+    arrayModuloForm(28) = "   "
     arrayModuloForm(29) = "    If Not Edicao Then"
     arrayModuloForm(30) = "        optAlterar.Value = False"
     arrayModuloForm(31) = "        optExcluir.Value = False"
     arrayModuloForm(32) = "        optNovo.Value = False"
-    arrayModuloForm(33) = "        lblStatus.Caption = """""""
+    arrayModuloForm(33) = "        lblStatus.Caption = """""
     arrayModuloForm(34) = "    End If"
     arrayModuloForm(35) = "    "
     arrayModuloForm(36) = "    modoEdicao = Edicao"
     arrayModuloForm(37) = "End Sub"
     arrayModuloForm(38) = ""
     arrayModuloForm(39) = "Private Sub btnAnterior_Click()"
-    arrayModuloForm(40) = "    If clsAtendimento.MovePrevious Then Call SetValues(clsAtendimento)"
+    arrayModuloForm(40) = "    If cls[NOME_FORM].MovePrevious Then Call SetValues(cls[NOME_FORM])"
     arrayModuloForm(41) = "End Sub"
     arrayModuloForm(42) = ""
     arrayModuloForm(43) = "Private Sub btnPesquisar_Click()"
-    arrayModuloForm(44) = "    ufmAtendimentoPesquisa.Show"
+    arrayModuloForm(44) = "    ufm[NOME_FORM]Pesquisa.Show"
     arrayModuloForm(45) = "End Sub"
     arrayModuloForm(46) = ""
     arrayModuloForm(47) = "Private Sub btnPrimeiro_Click()"
-    arrayModuloForm(48) = "    clsAtendimento.MoveFirst"
-    arrayModuloForm(49) = "    Call SetValues(clsAtendimento)"
+    arrayModuloForm(48) = "    cls[NOME_FORM].MoveFirst"
+    arrayModuloForm(49) = "    Call SetValues(cls[NOME_FORM])"
     arrayModuloForm(50) = "End Sub"
     arrayModuloForm(51) = ""
     arrayModuloForm(52) = "Private Sub btnProximo_Click()"
-    arrayModuloForm(53) = "    If clsAtendimento.MoveNext Then Call SetValues(clsAtendimento)"
+    arrayModuloForm(53) = "    If cls[NOME_FORM].MoveNext Then Call SetValues(cls[NOME_FORM])"
     arrayModuloForm(54) = "End Sub"
     arrayModuloForm(55) = ""
     arrayModuloForm(56) = "Private Sub btnUtimo_Click()"
-    arrayModuloForm(57) = "    clsAtendimento.MoveLast"
-    arrayModuloForm(58) = "    Call SetValues(clsAtendimento)"
+    arrayModuloForm(57) = "    cls[NOME_FORM].MoveLast"
+    arrayModuloForm(58) = "    Call SetValues(cls[NOME_FORM])"
     arrayModuloForm(59) = "End Sub"
     arrayModuloForm(60) = ""
     arrayModuloForm(61) = "Private Sub optAlterar_Click()"
@@ -93,306 +103,252 @@ Private Sub Init()
     arrayModuloForm(70) = "Private Sub optNovo_Click()"
     arrayModuloForm(71) = "    AlteraModo Edicao:=True"
     arrayModuloForm(72) = "    Call LimpaControles"
-    arrayModuloForm(73) = "    clsAtendimento.AddNew"
+    arrayModuloForm(73) = "    cls[NOME_FORM].AddNew"
     arrayModuloForm(74) = "End Sub"
     arrayModuloForm(75) = ""
-    arrayModuloForm(76) = "Public Sub LimpaControles()"
-    arrayModuloForm(77) = "        SetValue Me.txtId, """""""
-    arrayModuloForm(78) = "        SetValue Me.txtCodigo, """""""
-    arrayModuloForm(79) = "        SetValue Me.txtNome, """""""
-    arrayModuloForm(80) = "        SetValue Me.txtAdmissao, """""""
-    arrayModuloForm(81) = "        SetValue Me.txtNascimento, """""""
-    arrayModuloForm(82) = "        SetValue Me.cbxPDD, """""""
-    arrayModuloForm(83) = "        SetValue Me.txtTCasa, """""""
-    arrayModuloForm(84) = "        SetValue Me.txtData, """""""
-    arrayModuloForm(85) = "End Sub"
-    arrayModuloForm(86) = ""
-    arrayModuloForm(87) = "Private Sub UserForm_Initialize()"
-    arrayModuloForm(88) = "    IsCancelled = True"
-    arrayModuloForm(89) = "    "
-    arrayModuloForm(90) = "    AlteraModo Edicao:=False"
-    arrayModuloForm(91) = "End Sub"
-    arrayModuloForm(92) = ""
-    arrayModuloForm(93) = "Private Sub btnCancel_Click()"
-    arrayModuloForm(94) = "    AlteraModo Edicao:=False"
-    arrayModuloForm(95) = "    clsAtendimento.MovePrevious"
-    arrayModuloForm(96) = "    Call SetValues(clsAtendimento)"
-    arrayModuloForm(97) = "    'Me.Hide"
-    arrayModuloForm(98) = "End Sub"
-    arrayModuloForm(99) = ""
-    arrayModuloForm(100) = "Private Sub btnOK_Click()"
-    arrayModuloForm(101) = "    If optExcluir.Value Then"
-    arrayModuloForm(102) = "        If MsgBox(""Deseja realmente excluir este registro?"", vbYesNo, ""Aviso de Exclusão"") = vbYes Then"
-    arrayModuloForm(103) = "            clsAtendimento.Delete"
-    arrayModuloForm(104) = "            AlteraModo Edicao:=False"
-    arrayModuloForm(105) = "            clsAtendimento.MoveFirst"
-    arrayModuloForm(106) = "            Call SetValues(clsAtendimento)"
-    arrayModuloForm(107) = "        End If"
-    arrayModuloForm(108) = "    ElseIf IsInputOk Then"
-    arrayModuloForm(109) = "        IsCancelled = False"
-    arrayModuloForm(110) = "        Call GetValues(clsAtendimento)"
-    arrayModuloForm(111) = "        If clsAtendimento.Update Then"
-    arrayModuloForm(112) = "            AlteraModo Edicao:=False"
-    arrayModuloForm(113) = "            clsAtendimento.MoveFirst"
-    arrayModuloForm(114) = "            Call SetValues(clsAtendimento)"
-    arrayModuloForm(115) = "        End If"
-    arrayModuloForm(116) = "        'Me.Hide"
-    arrayModuloForm(117) = "    End If"
-    arrayModuloForm(118) = "End Sub"
-    arrayModuloForm(119) = ""
-    arrayModuloForm(120) = "Public Sub SetValues(udtAtendimento As Atendimento)"
-    arrayModuloForm(121) = "    With udtAtendimento"
-    arrayModuloForm(122) = "        SetValue Me.txtId, .Id"
-    arrayModuloForm(123) = "        SetValue Me.txtCodigo, .Codigo"
-    arrayModuloForm(124) = "        SetValue Me.txtNome, .Nome"
-    arrayModuloForm(125) = "        SetValue Me.txtAdmissao, .Admissao"
-    arrayModuloForm(126) = "        SetValue Me.txtNascimento, .Nascimento"
-    arrayModuloForm(127) = "        SetValue Me.cbxPDD, .PDD"
-    arrayModuloForm(128) = "        SetValue Me.txtTCasa, .TCasa"
-    arrayModuloForm(129) = "        SetValue Me.txtData, .Data"
-    arrayModuloForm(130) = "    End With"
-    arrayModuloForm(131) = "    "
-    arrayModuloForm(132) = "    Set clsAtendimento = udtAtendimento"
-    arrayModuloForm(133) = "End Sub"
-    arrayModuloForm(134) = ""
-    arrayModuloForm(135) = "Public Sub GetValues(ByRef udtAtendimento As Atendimento)"
-    arrayModuloForm(136) = "    With udtAtendimento"
-    arrayModuloForm(137) = "        '.Id = GetValue(Me.txtId, TypeName(.Id))"
-    arrayModuloForm(138) = "        .Codigo = GetValue(Me.txtCodigo, TypeName(.Codigo))"
-    arrayModuloForm(139) = "        .Nome = GetValue(Me.txtNome, TypeName(.Nome))"
-    arrayModuloForm(140) = "        .Admissao = GetValue(Me.txtAdmissao, TypeName(.Admissao))"
-    arrayModuloForm(141) = "        .Nascimento = GetValue(Me.txtNascimento, TypeName(.Nascimento))"
-    arrayModuloForm(142) = "        .PDD = GetValue(Me.cbxPDD, TypeName(.PDD))"
-    arrayModuloForm(143) = "        .TCasa = GetValue(Me.txtTCasa, TypeName(.TCasa))"
-    arrayModuloForm(144) = "        .Data = GetValue(Me.txtData, TypeName(.Data))"
-    arrayModuloForm(145) = "    End With"
-    arrayModuloForm(146) = "End Sub"
-    arrayModuloForm(147) = ""
-    arrayModuloForm(148) = "Private Function IsInputOk() As Boolean"
-    arrayModuloForm(149) = "Dim ctl As MSForms.Control"
-    arrayModuloForm(150) = "Dim strMessage As String"
-    arrayModuloForm(151) = "    IsInputOk = False"
-    arrayModuloForm(152) = "    For Each ctl In Me.Controls"
-    arrayModuloForm(153) = "        If IsInputControl(ctl) Then"
-    arrayModuloForm(154) = "            If IsRequired(ctl) Then"
-    arrayModuloForm(155) = "                If Not HasValue(ctl) Then"
-    arrayModuloForm(156) = "                    strMessage = ControlName(ctl) & "" é obrigatório"""
-    arrayModuloForm(157) = "                End If"
-    arrayModuloForm(158) = "            End If"
-    arrayModuloForm(159) = "            If Not IsCorrectType(ctl) Then"
-    arrayModuloForm(160) = "                strMessage = ControlName(ctl) & "" é inválido"""
-    arrayModuloForm(161) = "            End If"
-    arrayModuloForm(162) = "        End If"
-    arrayModuloForm(163) = "        If Len(strMessage) > 0 Then"
-    arrayModuloForm(164) = "            ctl.SetFocus"
-    arrayModuloForm(165) = "            GoTo HandleMessage"
-    arrayModuloForm(166) = "        End If"
-    arrayModuloForm(167) = "    Next"
-    arrayModuloForm(168) = "    IsInputOk = True"
-    arrayModuloForm(169) = "HandleExit:"
-    arrayModuloForm(170) = "    Exit Function"
-    arrayModuloForm(171) = "HandleMessage:"
-    arrayModuloForm(172) = "    MsgBox strMessage"
-    arrayModuloForm(173) = "    GoTo HandleExit"
-    arrayModuloForm(174) = "End Function"
-    arrayModuloForm(175) = ""
-    arrayModuloForm(176) = "Public Sub FillList(ControlName As String, Values As Variant)"
-    arrayModuloForm(177) = "    With Me.Controls(ControlName)"
-    arrayModuloForm(178) = "        Dim iArrayForNext As Long"
-    arrayModuloForm(179) = "        .Clear"
-    arrayModuloForm(180) = "        For iArrayForNext = LBound(Values) To UBound(Values)"
-    arrayModuloForm(181) = "            .AddItem Values(iArrayForNext)"
-    arrayModuloForm(182) = "        Next"
-    arrayModuloForm(183) = "    End With"
-    arrayModuloForm(184) = "End Sub"
-    arrayModuloForm(185) = ""
-    arrayModuloForm(186) = "Private Function IsCorrectType(ctl As MSForms.Control) As Boolean"
-    arrayModuloForm(187) = "Dim strControlDataType As String, strMessage As String"
-    arrayModuloForm(188) = "Dim dummy As Variant"
-    arrayModuloForm(189) = "    strControlDataType = ControlDataType(ctl)"
-    arrayModuloForm(190) = "On Error GoTo HandleError"
-    arrayModuloForm(191) = "    Select Case strControlDataType"
-    arrayModuloForm(192) = "    Case ""Boolean"""
-    arrayModuloForm(193) = "        dummy = CBool(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(194) = "    Case ""Byte"""""
-    arrayModuloForm(195) = "        dummy = CByte(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(196) = "    Case ""Currency"""
-    arrayModuloForm(197) = "        dummy = CCur(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(198) = "    Case ""Date"""
-    arrayModuloForm(199) = "        dummy = CDate(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(200) = "    Case ""Double"""
-    arrayModuloForm(201) = "        dummy = CDbl(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(202) = "    Case ""Decimal"""
-    arrayModuloForm(203) = "        dummy = CDec(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(204) = "    Case ""Integer"""
-    arrayModuloForm(205) = "        dummy = CInt(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(206) = "    Case ""Long"""
-    arrayModuloForm(207) = "        dummy = CLng(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(208) = "    Case ""Single"""
-    arrayModuloForm(209) = "        dummy = CSng(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(210) = "    Case ""String"""
-    arrayModuloForm(211) = "        dummy = CStr(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(212) = "    Case ""Variant"""
-    arrayModuloForm(213) = "        dummy = CVar(GetValue(ctl, strControlDataType))"
-    arrayModuloForm(214) = "    End Select"
-    arrayModuloForm(215) = "    IsCorrectType = True"
-    arrayModuloForm(216) = "HandleExit:"
-    arrayModuloForm(217) = "    Exit Function"
-    arrayModuloForm(218) = "HandleError:"
-    arrayModuloForm(219) = "    IsCorrectType = False"
-    arrayModuloForm(220) = "    Resume HandleExit"
-    arrayModuloForm(221) = "End Function"
-    arrayModuloForm(222) = ""
-    arrayModuloForm(223) = "Private Function ControlDataType(ctl As MSForms.Control) As String"
-    arrayModuloForm(224) = "    Select Case ctl.Name"
-    arrayModuloForm(225) = "    'Case ""txtId"": ControlDataType = ""Integer"""
-    arrayModuloForm(226) = "    Case ""txtCodigo"": ControlDataType = ""String"""
-    arrayModuloForm(227) = "    Case ""txtNome""": ControlDataType = """String"""
-    arrayModuloForm(228) = "    Case ""txtAdmissao""": ControlDataType = """Date"""
-    arrayModuloForm(229) = "    Case ""txtNascimento""": ControlDataType = """Date"""
-    arrayModuloForm(230) = "    Case ""cbxPDD"": ControlDataType = ""Boolean"""
-    arrayModuloForm(231) = "    Case ""txtTCasa"": ControlDataType = ""Integer"""
-    arrayModuloForm(232) = "    Case ""txtData"": ControlDataType = ""Date"""
-    arrayModuloForm(233) = "    End Select"
-    arrayModuloForm(234) = "End Function"
-    arrayModuloForm(235) = ""
-    arrayModuloForm(236) = "Private Function ControlName(ctl As MSForms.Control) As String"
-    arrayModuloForm(237) = "On Error GoTo HandleError"
-    arrayModuloForm(238) = "    If Not ctl Is Nothing Then"
-    arrayModuloForm(239) = "        ControlName = ctl.Name"
-    arrayModuloForm(240) = "        Select Case TypeName(ctl)"
-    arrayModuloForm(241) = "        Case ""TextBox"", ""ListBox"", ""ComboBox"""
-    arrayModuloForm(242) = "            If ctl.TabIndex > 0 Then"
-    arrayModuloForm(243) = "                Dim c As MSForms.Control"
-    arrayModuloForm(244) = "                For Each c In Me.Controls"
-    arrayModuloForm(245) = "                    If c.TabIndex = ctl.TabIndex - 1 Then"
-    arrayModuloForm(246) = "                        If TypeOf c Is MSForms.Label Then"
-    arrayModuloForm(247) = "                            ControlName = c.Caption"
-    arrayModuloForm(248) = "                        End If"
-    arrayModuloForm(249) = "                    End If"
-    arrayModuloForm(250) = "                Next"
-    arrayModuloForm(251) = "            End If"
-    arrayModuloForm(252) = "        Case Else"
-    arrayModuloForm(253) = "            ControlName = ctl.Caption"
-    arrayModuloForm(254) = "        End Select"
-    arrayModuloForm(255) = "    End If"
-    arrayModuloForm(256) = "HandleExit:"
-    arrayModuloForm(257) = "    Exit Function"
-    arrayModuloForm(258) = "HandleError:"
-    arrayModuloForm(259) = "    Resume HandleExit"
-    arrayModuloForm(260) = "End Function"
-    arrayModuloForm(261) = ""
-    arrayModuloForm(262) = "Private Function IsRequired(ctl As MSForms.Control) As Boolean"
-    arrayModuloForm(263) = "    Select Case ctl.Name"
-    arrayModuloForm(264) = "    Case ""txtCodigo"", ""txtNome"", ""txtData"""
-    arrayModuloForm(265) = "        IsRequired = True"
-    arrayModuloForm(266) = "    Case Else"
-    arrayModuloForm(267) = "        IsRequired = False"
-    arrayModuloForm(268) = "    End Select"
-    arrayModuloForm(269) = "End Function"
-    arrayModuloForm(270) = ""
-    arrayModuloForm(271) = "Private Function IsInputControl(ctl As MSForms.Control) As Boolean"
-    arrayModuloForm(272) = "    Select Case TypeName(ctl)"
-    arrayModuloForm(273) = "    Case ""TextBox"", ""ComboBox"", ""ListBox"", ""CheckBox"", ""OptionButton"", ""ToggleButton"""
-    arrayModuloForm(274) = "        IsInputControl = True"
-    arrayModuloForm(275) = "    Case Else"
-    arrayModuloForm(276) = "        IsInputControl = False"
-    arrayModuloForm(277) = "    End Select"
-    arrayModuloForm(278) = "End Function"
-    arrayModuloForm(279) = ""
-    arrayModuloForm(280) = "Private Function HasValue(ctl As MSForms.Control) As Boolean"
-    arrayModuloForm(281) = "    Dim var As Variant"
-    arrayModuloForm(282) = "    var = GetValue(ctl, ""Variant"")"
-    arrayModuloForm(283) = "    If IsNull(var) Then"
-    arrayModuloForm(284) = "        HasValue = False"
-    arrayModuloForm(285) = "    ElseIf Len(var) = 0 Then"
-    arrayModuloForm(286) = "        HasValue = False"
-    arrayModuloForm(287) = "    Else"
-    arrayModuloForm(288) = "        HasValue = True"
-    arrayModuloForm(289) = "    End If"
-    arrayModuloForm(290) = "End Function"
-    arrayModuloForm(291) = ""
-    arrayModuloForm(292) = "Private Function GetValue(ctl As MSForms.Control, strTypeName As String) As Variant"
-    arrayModuloForm(293) = "On Error GoTo HandleError"
-    arrayModuloForm(294) = "    Dim Value As Variant"
-    arrayModuloForm(295) = "    Value = ctl.Value"
-    arrayModuloForm(296) = "    If IsNull(Value) And strTypeName <> ""Variant"" Then"
-    arrayModuloForm(297) = "        Select Case strTypeName"
-    arrayModuloForm(298) = "        Case ""String"""
-    arrayModuloForm(299) = "            Value = """""
-    arrayModuloForm(300) = "        Case Else"
-    arrayModuloForm(301) = "            Value = 0"
-    arrayModuloForm(302) = "        End Select"
-    arrayModuloForm(303) = "    End If"
-    arrayModuloForm(304) = "HandleExit:"
-    arrayModuloForm(305) = "    GetValue = Value"
-    arrayModuloForm(306) = "    Exit Function"
-    arrayModuloForm(307) = "HandleError:"
-    arrayModuloForm(308) = "    Resume HandleExit"
-    arrayModuloForm(309) = "End Function"
-    arrayModuloForm(310) = ""
-    arrayModuloForm(311) = "Private Sub SetValue(ctl As MSForms.Control, Value As Variant)"
-    arrayModuloForm(312) = "On Error GoTo HandleError"
-    arrayModuloForm(313) = "    ctl.Value = Value"
-    arrayModuloForm(314) = "HandleExit:"
-    arrayModuloForm(315) = "    Exit Sub"
-    arrayModuloForm(316) = "HandleError:"
-    arrayModuloForm(317) = "    Resume HandleExit"
-    arrayModuloForm(318) = "End Sub"
-End Sub
-
-Private Sub btnSelecionarRange_Click()
-    Dim rangeSelecionado As Range
-    Set rangeSelecionado = SelecionarRange()
+    arrayModuloForm(76) = "Private Sub UserForm_Initialize()"
+    arrayModuloForm(77) = "    IsCancelled = True"
+    arrayModuloForm(78) = "    "
+    arrayModuloForm(79) = "    AlteraModo Edicao:=False"
+    arrayModuloForm(80) = "End Sub"
+    arrayModuloForm(81) = ""
+    arrayModuloForm(82) = "Private Sub btnCancel_Click()"
+    arrayModuloForm(83) = "    AlteraModo Edicao:=False"
+    arrayModuloForm(84) = "    cls[NOME_FORM].MovePrevious"
+    arrayModuloForm(85) = "    Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(86) = "    'Me.Hide"
+    arrayModuloForm(87) = "End Sub"
+    arrayModuloForm(88) = ""
+    arrayModuloForm(89) = "Private Sub btnOK_Click()"
+    arrayModuloForm(90) = "    If optExcluir.Value Then"
+    arrayModuloForm(91) = "        If MsgBox(""Deseja realmente excluir este registro?"", vbYesNo, ""Aviso de Exclusão"") = vbYes Then"
+    arrayModuloForm(92) = "            cls[NOME_FORM].Delete"
+    arrayModuloForm(93) = "            AlteraModo Edicao:=False"
+    arrayModuloForm(94) = "            cls[NOME_FORM].MoveFirst"
+    arrayModuloForm(95) = "            Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(96) = "        End If"
+    arrayModuloForm(97) = "    ElseIf IsInputOk Then"
+    arrayModuloForm(98) = "        IsCancelled = False"
+    arrayModuloForm(99) = "        Call GetValues(cls[NOME_FORM])"
+    arrayModuloForm(100) = "        If cls[NOME_FORM].Update Then"
+    arrayModuloForm(101) = "            AlteraModo Edicao:=False"
+    arrayModuloForm(102) = "            cls[NOME_FORM].MoveFirst"
+    arrayModuloForm(103) = "            Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(104) = "        End If"
+    arrayModuloForm(105) = "        'Me.Hide"
+    arrayModuloForm(106) = "    End If"
+    arrayModuloForm(107) = "End Sub"
+    arrayModuloForm(108) = ""
+    arrayModuloForm(109) = "Private Function IsInputOk() As Boolean"
+    arrayModuloForm(110) = "Dim ctl As MSForms.Control"
+    arrayModuloForm(111) = "Dim strMessage As String"
+    arrayModuloForm(112) = "    IsInputOk = False"
+    arrayModuloForm(113) = "    For Each ctl In Me.Controls"
+    arrayModuloForm(114) = "        If IsInputControl(ctl) Then"
+    arrayModuloForm(115) = "            If IsRequired(ctl) Then"
+    arrayModuloForm(116) = "                If Not HasValue(ctl) Then"
+    arrayModuloForm(117) = "                    strMessage = ControlName(ctl) & "" é obrigatório"""
+    arrayModuloForm(118) = "                End If"
+    arrayModuloForm(119) = "            End If"
+    arrayModuloForm(120) = "            If Not IsCorrectType(ctl) Then"
+    arrayModuloForm(121) = "                strMessage = ControlName(ctl) & "" é inválido"""
+    arrayModuloForm(122) = "            End If"
+    arrayModuloForm(123) = "        End If"
+    arrayModuloForm(124) = "        If Len(strMessage) > 0 Then"
+    arrayModuloForm(125) = "            ctl.SetFocus"
+    arrayModuloForm(126) = "            GoTo HandleMessage"
+    arrayModuloForm(127) = "        End If"
+    arrayModuloForm(128) = "    Next"
+    arrayModuloForm(129) = "    IsInputOk = True"
+    arrayModuloForm(130) = "HandleExit:"
+    arrayModuloForm(131) = "    Exit Function"
+    arrayModuloForm(132) = "HandleMessage:"
+    arrayModuloForm(133) = "    MsgBox strMessage"
+    arrayModuloForm(134) = "    GoTo HandleExit"
+    arrayModuloForm(135) = "End Function"
+    arrayModuloForm(136) = ""
+    arrayModuloForm(137) = "Public Sub FillList(ControlName As String, Values As Variant)"
+    arrayModuloForm(138) = "    With Me.Controls(ControlName)"
+    arrayModuloForm(139) = "        Dim iArrayForNext As Long"
+    arrayModuloForm(140) = "        .Clear"
+    arrayModuloForm(141) = "        For iArrayForNext = LBound(Values) To UBound(Values)"
+    arrayModuloForm(142) = "            .AddItem Values(iArrayForNext)"
+    arrayModuloForm(143) = "        Next"
+    arrayModuloForm(144) = "    End With"
+    arrayModuloForm(145) = "End Sub"
+    arrayModuloForm(146) = ""
+    arrayModuloForm(147) = "Private Function IsCorrectType(ctl As MSForms.Control) As Boolean"
+    arrayModuloForm(148) = "Dim strControlDataType As String, strMessage As String"
+    arrayModuloForm(149) = "Dim dummy As Variant"
+    arrayModuloForm(150) = "    strControlDataType = ControlDataType(ctl)"
+    arrayModuloForm(151) = "On Error GoTo HandleError"
+    arrayModuloForm(152) = "    Select Case strControlDataType"
+    arrayModuloForm(153) = "    Case ""Boolean"""
+    arrayModuloForm(154) = "        dummy = CBool(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(155) = "    Case ""Byte"""""
+    arrayModuloForm(156) = "        dummy = CByte(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(157) = "    Case ""Currency"""
+    arrayModuloForm(158) = "        dummy = CCur(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(159) = "    Case ""Date"""
+    arrayModuloForm(160) = "        dummy = CDate(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(161) = "    Case ""Double"""
+    arrayModuloForm(162) = "        dummy = CDbl(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(163) = "    Case ""Decimal"""
+    arrayModuloForm(164) = "        dummy = CDec(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(165) = "    Case ""Integer"""
+    arrayModuloForm(166) = "        dummy = CInt(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(167) = "    Case ""Long"""
+    arrayModuloForm(168) = "        dummy = CLng(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(169) = "    Case ""Single"""
+    arrayModuloForm(170) = "        dummy = CSng(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(171) = "    Case ""String"""
+    arrayModuloForm(172) = "        dummy = CStr(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(173) = "    Case ""Variant"""
+    arrayModuloForm(174) = "        dummy = CVar(GetValue(ctl, strControlDataType))"
+    arrayModuloForm(175) = "    End Select"
+    arrayModuloForm(176) = "    IsCorrectType = True"
+    arrayModuloForm(177) = "HandleExit:"
+    arrayModuloForm(178) = "    Exit Function"
+    arrayModuloForm(179) = "HandleError:"
+    arrayModuloForm(180) = "    IsCorrectType = False"
+    arrayModuloForm(181) = "    Resume HandleExit"
+    arrayModuloForm(182) = "End Function"
+    arrayModuloForm(183) = ""
+    arrayModuloForm(184) = "Private Function ControlName(ctl As MSForms.Control) As String"
+    arrayModuloForm(185) = "On Error GoTo HandleError"
+    arrayModuloForm(186) = "    If Not ctl Is Nothing Then"
+    arrayModuloForm(187) = "        ControlName = ctl.Name"
+    arrayModuloForm(188) = "        Select Case TypeName(ctl)"
+    arrayModuloForm(189) = "        Case ""TextBox"", ""ListBox"", ""ComboBox"""
+    arrayModuloForm(190) = "            If ctl.TabIndex > 0 Then"
+    arrayModuloForm(191) = "                Dim c As MSForms.Control"
+    arrayModuloForm(192) = "                For Each c In Me.Controls"
+    arrayModuloForm(193) = "                    If c.TabIndex = ctl.TabIndex - 1 Then"
+    arrayModuloForm(194) = "                        If TypeOf c Is MSForms.Label Then"
+    arrayModuloForm(195) = "                            ControlName = c.Caption"
+    arrayModuloForm(196) = "                        End If"
+    arrayModuloForm(197) = "                    End If"
+    arrayModuloForm(198) = "                Next"
+    arrayModuloForm(199) = "            End If"
+    arrayModuloForm(200) = "        Case Else"
+    arrayModuloForm(201) = "            ControlName = ctl.Caption"
+    arrayModuloForm(202) = "        End Select"
+    arrayModuloForm(203) = "    End If"
+    arrayModuloForm(204) = "HandleExit:"
+    arrayModuloForm(205) = "    Exit Function"
+    arrayModuloForm(206) = "HandleError:"
+    arrayModuloForm(207) = "    Resume HandleExit"
+    arrayModuloForm(208) = "End Function"
+    arrayModuloForm(209) = ""
+    arrayModuloForm(210) = "Private Function IsRequired(ctl As MSForms.Control) As Boolean"
+    arrayModuloForm(211) = "    Select Case ctl.Name"
+    arrayModuloForm(212) = "    Case [CONTROLES_REQUERIDOS]"
+    arrayModuloForm(213) = "        IsRequired = True"
+    arrayModuloForm(214) = "    Case Else"
+    arrayModuloForm(215) = "        IsRequired = False"
+    arrayModuloForm(216) = "    End Select"
+    arrayModuloForm(217) = "End Function"
+    arrayModuloForm(218) = ""
+    arrayModuloForm(219) = "Private Function IsInputControl(ctl As MSForms.Control) As Boolean"
+    arrayModuloForm(220) = "    Select Case TypeName(ctl)"
+    arrayModuloForm(221) = "    Case ""TextBox"", ""ComboBox"", ""ListBox"", ""CheckBox"", ""OptionButton"", ""ToggleButton"""
+    arrayModuloForm(222) = "        IsInputControl = True"
+    arrayModuloForm(223) = "    Case Else"
+    arrayModuloForm(224) = "        IsInputControl = False"
+    arrayModuloForm(225) = "    End Select"
+    arrayModuloForm(226) = "End Function"
+    arrayModuloForm(227) = ""
+    arrayModuloForm(228) = "Private Function HasValue(ctl As MSForms.Control) As Boolean"
+    arrayModuloForm(229) = "    Dim var As Variant"
+    arrayModuloForm(230) = "    var = GetValue(ctl, ""Variant"")"
+    arrayModuloForm(231) = "    If IsNull(var) Then"
+    arrayModuloForm(232) = "        HasValue = False"
+    arrayModuloForm(233) = "    ElseIf Len(var) = 0 Then"
+    arrayModuloForm(234) = "        HasValue = False"
+    arrayModuloForm(235) = "    Else"
+    arrayModuloForm(236) = "        HasValue = True"
+    arrayModuloForm(237) = "    End If"
+    arrayModuloForm(238) = "End Function"
+    arrayModuloForm(239) = ""
+    arrayModuloForm(240) = "Private Function GetValue(ctl As MSForms.Control, strTypeName As String) As Variant"
+    arrayModuloForm(241) = "On Error GoTo HandleError"
+    arrayModuloForm(242) = "    Dim Value As Variant"
+    arrayModuloForm(243) = "    Value = ctl.Value"
+    arrayModuloForm(244) = "    If IsNull(Value) And strTypeName <> ""Variant"" Then"
+    arrayModuloForm(245) = "        Select Case strTypeName"
+    arrayModuloForm(246) = "        Case ""String"""
+    arrayModuloForm(247) = "            Value = """""
+    arrayModuloForm(248) = "        Case Else"
+    arrayModuloForm(249) = "            Value = 0"
+    arrayModuloForm(250) = "        End Select"
+    arrayModuloForm(251) = "    End If"
+    arrayModuloForm(252) = "HandleExit:"
+    arrayModuloForm(253) = "    GetValue = Value"
+    arrayModuloForm(254) = "    Exit Function"
+    arrayModuloForm(255) = "HandleError:"
+    arrayModuloForm(256) = "    Resume HandleExit"
+    arrayModuloForm(257) = "End Function"
+    arrayModuloForm(258) = ""
+    arrayModuloForm(259) = "Private Sub SetValue(ctl As MSForms.Control, Value As Variant)"
+    arrayModuloForm(260) = "On Error GoTo HandleError"
+    arrayModuloForm(261) = "    ctl.Value = Value"
+    arrayModuloForm(262) = "HandleExit:"
+    arrayModuloForm(263) = "    Exit Sub"
+    arrayModuloForm(264) = "HandleError:"
+    arrayModuloForm(265) = "    Resume HandleExit"
+    arrayModuloForm(266) = "End Sub"
     
-    If Not rangeSelecionado Is Nothing Then
-        lstColunas.Clear
-        lstColunas.ColumnCount = 3
-        ReDim controles(1 To rangeSelecionado.Columns.Count + 1, 1 To 3)
-        Dim linha As Long
-        linha = 1
-        
-        controles(linha, 1) = "Campo"
-        controles(linha, 2) = "Controle"
-        controles(linha, 3) = "Requerido"
-        
-        For linha = 1 To rangeSelecionado.Columns.Count
-            Me.lstColunas.AddItem
-            controles(linha + 1, 1) = rangeSelecionado.Cells(1, linha).Value
-            controles(linha + 1, 2) = "TextBox"
-            controles(linha + 1, 3) = "Não"
-        Next linha
-        
-        lstColunas.List = controles
-    End If
+    arrayModuloFuncaoLimpaControles(1) = "Public Sub LimpaControles()"
+    arrayModuloFuncaoLimpaControles(2) = "        SetValue Me.[NOME_CONTROLE], """""
+    arrayModuloFuncaoLimpaControles(3) = "End Sub"
     
-    Set rangeSelecionado = Nothing
+    arrayModuloFuncaoControlDataType(1) = "Private Function ControlDataType(ctl As MSForms.Control) As String"
+    arrayModuloFuncaoControlDataType(2) = "    Select Case ctl.Name"
+    arrayModuloFuncaoControlDataType(3) = "    'Case ""txtId"": ControlDataType = ""Integer"""
+    arrayModuloFuncaoControlDataType(4) = "    Case ""[NOME_CONTROLE]"": ControlDataType = ""[TIPO_DADO_CONTROLE]"""
+    arrayModuloFuncaoControlDataType(5) = "    End Select"
+    arrayModuloFuncaoControlDataType(6) = "End Function"
+    
+    arrayModuloFuncaoSetValues(1) = "Public Sub SetValues(udt[NOME_FORM] As [NOME_FORM])"
+    arrayModuloFuncaoSetValues(2) = "    With udt[NOME_FORM]"
+    arrayModuloFuncaoSetValues(3) = "        SetValue Me.[NOME_CONTROLE], .[NOME_CAMPO]"
+    arrayModuloFuncaoSetValues(4) = "    End With"
+    arrayModuloFuncaoSetValues(5) = "    "
+    arrayModuloFuncaoSetValues(6) = "    Set cls[NOME_FORM] = udt[NOME_FORM]"
+    arrayModuloFuncaoSetValues(7) = "End Sub"
+    
+    arrayModuloFuncaoGetValues(1) = "Public Sub GetValues(ByRef udt[NOME_FORM] As [NOME_FORM])"
+    arrayModuloFuncaoGetValues(2) = "    With udt[NOME_FORM]"
+    arrayModuloFuncaoGetValues(3) = "        '.Id = GetValue(Me.txtId, TypeName(.Id))"
+    arrayModuloFuncaoGetValues(4) = "        .[NOME_CAMPO] = GetValue(Me.[NOME_CONTROLE], TypeName(.[NOME_CAMPO]))"
+    arrayModuloFuncaoGetValues(5) = "    End With"
+    arrayModuloFuncaoGetValues(6) = "End Sub"
 End Sub
 
 Private Sub cboControle_Change()
     If lstColunas.ListIndex > 0 Then
-        linha = lstColunas.ListIndex
-        lstColunas.List(linha, 1) = cboControle.Text
+        Linha = lstColunas.ListIndex
+        lstColunas.List(Linha, 1) = cboControle.text
     End If
 End Sub
 
 Private Sub cbxRequerido_Click()
     If lstColunas.ListIndex > 0 Then
-        linha = lstColunas.ListIndex
-        lstColunas.List(linha, 2) = IIf(cbxRequerido.Value, "Sim", "Não")
+        Linha = lstColunas.ListIndex
+        lstColunas.List(Linha, 2) = IIf(cbxRequerido.Value, "Sim", "Não")
     End If
 End Sub
 
 Private Sub lstColunas_Click()
-    Dim linha As Long
+    Dim Linha As Long
     If lstColunas.ListIndex > 0 Then
-        linha = lstColunas.ListIndex
-        txtNome.Text = lstColunas.List(linha, 0)
-        cboControle.Text = lstColunas.List(linha, 1)
-        cbxRequerido.Value = IIf(lstColunas.List(linha, 2) = "Sim", True, False)
+        Linha = lstColunas.ListIndex
+        txtNome.text = lstColunas.List(Linha, 0)
+        cboControle.text = lstColunas.List(Linha, 1)
+        cbxRequerido.Value = IIf(lstColunas.List(Linha, 2) = "Sim", True, False)
         
         Dim eChave As Boolean
-        eChave = (lstColunas.List(linha, 3) = "Sim")
+        eChave = (lstColunas.List(Linha, 3) = "Sim")
         cboControle.Enabled = Not eChave
         cbxRequerido.Enabled = Not eChave
     End If
@@ -407,11 +363,11 @@ Private Sub UserForm_Initialize()
 End Sub
 
 Private Sub cmdGerarFormulario_Click()
-    If Trim(txtNomeFormulario.Text) <> "" Then
+    If Trim(txtNomeFormulario.text) <> "" Then
         If IsVarArrayEmpty(controles) Then
             MsgBox "E onde estão os campos?"
         Else
-            Call CriarForm(Trim(txtNomeFormulario.Text))
+            Call CriarForm(Trim(txtNomeFormulario.text))
         End If
     Else
         MsgBox "O nome do formulário é requerido"
@@ -424,7 +380,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Dim btnOk As MSForms.CommandButton
     Dim btnCancelar As MSForms.CommandButton
     Dim MyComboBox As MSForms.ComboBox
-    Dim N, X As Integer, MaxWidth As Long
+    Dim N As Integer, MaxWidth As Long
     
     NomeForm = "ufm" & NomeForm
      
@@ -449,6 +405,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     
     'cria os controles referentes aos campos
     Dim i As Long
+    Dim j As Integer
     Dim margemTopo As Integer, margeTopoInicial, distanciaEntre As Integer, margemEsquerda As Integer, alturaControle As Integer, larguraControle As Integer
     margeTopoInicial = 10
     margemTopo = 10
@@ -461,8 +418,8 @@ Private Sub CriarForm(ByVal NomeForm As String)
         'Rótulo
         Set Label = MyUserForm.Designer.Controls.Add("Forms.Label.1")
         With Label
-            .Caption = controles(i, 1)
-            .name = "lbl" & controles(i, 1)
+            .Caption = controles(i, colunaCampo)
+            .name = "lbl" & controles(i, colunaCampo)
             .Left = margemEsquerda
             .Top = margemTopo
             .Height = alturaControle
@@ -471,7 +428,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
         'Controle
         Set TextBox = MyUserForm.Designer.Controls.Add("Forms.TextBox.1")
         With TextBox
-            .name = "txt" & controles(i, 1)
+            .name = "txt" & controles(i, colunaCampo)
             .Left = margemEsquerda
             .Top = margemTopo + alturaControle + distanciaEntre
             .Height = alturaControle
@@ -511,14 +468,186 @@ Private Sub CriarForm(ByVal NomeForm As String)
         .Top = 44
     End With
      
-     '//Add code on the form for the CommandButtons
-    With MyUserForm.codeModule
-        X = .CountOfLines
+    'código do form
+    With MyUserForm.CodeModule
+        countOfLines = .countOfLines
         For i = 1 To UBound(arrayModuloForm)
-            .InsertLines X + i, arrayModuloForm(i)
+            Call InsertLine(MyUserForm, ReplaceToken(arrayModuloForm(i)))
         Next i
+        
+        Dim nomeControle As String, tipoDadoControle As String, nomeCampo As String, linhaAInserir As String, linhaNomeControle As Long
+    
+        'função LimpaControles
+        i = 1
+        While i <= UBound(arrayModuloFuncaoLimpaControles)
+            If InStr(1, arrayModuloFuncaoLimpaControles(i), "[NOME_CONTROLE]") > 0 Then
+                'guarda a referencia da linha com o conteudo
+                linhaNomeControle = i
+                For j = 2 To UBound(controles)
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), controles(j, colunaControle))
+                    linhaAInserir = Replace(arrayModuloFuncaoLimpaControles(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
+                    Call InsertLine(MyUserForm, linhaAInserir)
+                Next j
+            Else
+                Call InsertLine(MyUserForm, arrayModuloFuncaoLimpaControles(i))
+            End If
+            i = i + 1
+        Wend
+        
+        'função ControlDataType
+        i = 1
+        While i <= UBound(arrayModuloFuncaoControlDataType)
+            If InStr(1, arrayModuloFuncaoControlDataType(i), "[NOME_CONTROLE]") > 0 Then
+                'guarda a referencia da linha com o conteudo
+                linhaNomeControle = i
+                For j = 2 To UBound(controles)
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j, colunaControle))
+                    tipoDadoControle = ObtemTipoDadoCampo(controles(j, colunaControle))
+                    linhaAInserir = Replace(arrayModuloFuncaoControlDataType(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
+                    linhaAInserir = Replace(linhaAInserir, "[TIPO_DADO_CONTROLE]", tipoDadoControle)
+                    Call InsertLine(MyUserForm, linhaAInserir)
+                Next j
+            Else
+                Call InsertLine(MyUserForm, arrayModuloFuncaoControlDataType(i))
+            End If
+            i = i + 1
+        Wend
+        
+        'função SetValues
+        i = 1
+        While i <= UBound(arrayModuloFuncaoSetValues)
+            If InStr(1, arrayModuloFuncaoSetValues(i), "[NOME_CONTROLE]") > 0 Then
+                'guarda a referencia da linha com o conteudo
+                linhaNomeControle = i
+                For j = 2 To UBound(controles)
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j, colunaControle))
+                    nomeCampo = ObtemTipoDadoCampo(controles(j, colunaCampo))
+                    linhaAInserir = Replace(arrayModuloFuncaoSetValues(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
+                    linhaAInserir = Replace(linhaAInserir, "[NOME_CAMPO]", nomeCampo)
+                    Call InsertLine(MyUserForm, linhaAInserir)
+                Next j
+            Else
+                Call InsertLine(MyUserForm, ReplaceToken(arrayModuloFuncaoSetValues(i)))
+            End If
+            i = i + 1
+        Wend
+        
+        'função GetValues
+        i = 1
+        While i <= UBound(arrayModuloFuncaoGetValues)
+            If InStr(1, arrayModuloFuncaoGetValues(i), "[NOME_CONTROLE]") > 0 Then
+                'guarda a referencia da linha com o conteudo
+                linhaNomeControle = i
+                For j = 2 To UBound(controles)
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j, colunaControle))
+                    nomeCampo = ObtemTipoDadoCampo(controles(j, colunaCampo))
+                    linhaAInserir = Replace(arrayModuloFuncaoGetValues(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
+                    linhaAInserir = Replace(linhaAInserir, "[NOME_CAMPO]", nomeCampo)
+                    Call InsertLine(MyUserForm, linhaAInserir)
+                Next j
+            Else
+                Call InsertLine(MyUserForm, ReplaceToken(arrayModuloFuncaoGetValues(i)))
+            End If
+            i = i + 1
+        Wend
     End With
+    
+    Debug.Print "CountOfLines :" & countOfLines
     
     MsgBox NomeForm & " gerado com sucesso"
     Unload Me
 End Sub
+
+Private Sub InsertLine(ByRef Form As VBComponent, ByVal Linha As String)
+    countOfLines = countOfLines + 1
+    Call Form.CodeModule.InsertLines(countOfLines, Linha)
+    'Debug.Print Linha
+End Sub
+
+Private Function ReplaceToken(ByVal text As String)
+    Dim i As Integer
+    '[NOME_FORM]
+    text = Replace(text, "[NOME_FORM]", Trim(txtNomeFormulario.text))
+    '[CHAVE_PRIMARIA]
+    text = Replace(text, "[CHAVE_PRIMARIA]", ChavePrimaria)
+    '[CONTROLES_REQUERIDOS]
+    Dim controlesRequeridos() As String, controlesRequeridosCount As Long, controlesRequeridosIndex As Long
+    i = 1
+    Do
+        If controles(i, colunaRequerido) = "Sim" Then controlesRequeridosCount = controlesRequeridosCount + 1
+        i = i + 1
+    Loop While i <= UBound(controles)
+        
+    ReDim controlesRequeridos(1 To controlesRequeridosCount)
+    controlesRequeridosIndex = 1
+    For i = 2 To UBound(controles)
+        If controles(i, colunaRequerido) = "Sim" Then
+            controlesRequeridos(controlesRequeridosIndex) = """" & ObtemNomeControle(controles(i, colunaCampo), lstColunas.List(i - 1, colunaControle - 1)) & """"
+            controlesRequeridosIndex = controlesRequeridosIndex + 1
+        End If
+    Next i
+    text = Replace(text, "[CONTROLES_REQUERIDOS]", Join(controlesRequeridos, ","))
+    
+    ReplaceToken = text
+End Function
+
+Private Function ChavePrimaria() As String
+    If nomeCampoChavePrimaria = "" Then
+        Dim i As Integer
+        For i = 2 To UBound(controles)
+            If controles(i, colunaEchave) = "Sim" Then
+                nomeCampoChavePrimaria = controles(i, colunaCampo)
+                Exit For
+            End If
+        Next i
+    End If
+    
+    ChavePrimaria = nomeCampoChavePrimaria
+End Function
+
+Private Function ObtemNomeControle(ByVal campo As String, ByVal controle As String) As String
+    Dim prefixo As String
+    Select Case controle
+        Case "TextBox"
+            prefixo = "txt"
+        Case "ComboBox"
+            prefixo = ""
+        Case "ListBox"
+            prefixo = "lst"
+        Case "CheckBox"
+            prefixo = "cbx"
+        Case "OptionButton"
+            prefixo = "opt"
+        Case "ToggleButton"
+            prefixo = "tgb"
+        Case Else
+            prexixo = "ctl"
+    End Select
+    
+    ObtemNomeControle = prefixo & campo
+End Function
+
+Private Function ObtemTipoDadoCampo(ByVal tipo As String) As String
+    Select Case tipo
+        Case "Text"
+            tipo = "String"
+        Case "Memo"
+            tipo = "String"
+        Case "Number"
+            tipo = "Long"
+        Case "Date/Time"
+            tipo = "Date"
+        Case "Currency"
+            tipo = "Double"
+        Case "AutoNumber"
+            tipo = "Long"
+        Case "Yes/No"
+            tipo = "Boolean"
+        Case "Hyperlink"
+            tipo = "String"
+        Case Else
+            tipo = "Variant"
+    End Select
+    ObtemTipoDadoCampo = tipo
+End Function
+

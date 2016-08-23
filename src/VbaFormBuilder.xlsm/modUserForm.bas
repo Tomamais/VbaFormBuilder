@@ -53,8 +53,8 @@ Sub MakeUserForm()
     End With
      
      '//Add code on the form for the CommandButtons
-    With MyUserForm.codeModule
-        X = .CountOfLines
+    With MyUserForm.CodeModule
+        X = .countOfLines
         Dim i As Long
         For i = 1 To UBound(arrayModuloForm)
             .InsertLines X + i, arrayModuloForm(i)

@@ -133,9 +133,9 @@ End Sub
 
 Private Function hasCodeToExport(component As VBComponent) As Boolean
     hasCodeToExport = True
-    If component.codeModule.CountOfLines <= 2 Then
+    If component.CodeModule.countOfLines <= 2 Then
         Dim firstLine As String
-        firstLine = Trim(component.codeModule.lines(1, 1))
+        firstLine = Trim(component.CodeModule.lines(1, 1))
         'Debug.Print firstLine
         hasCodeToExport = Not (firstLine = "" Or firstLine = "Option Explicit")
     End If
@@ -159,7 +159,7 @@ Private Sub exportLines(exportPath As String, component As VBComponent)
     Dim FSO As New Scripting.FileSystemObject
     Dim outStream As TextStream
     Set outStream = FSO.CreateTextFile(fileName, True, False)
-    outStream.Write (component.codeModule.lines(1, component.codeModule.CountOfLines))
+    outStream.Write (component.CodeModule.lines(1, component.CodeModule.countOfLines))
     outStream.Close
 End Sub
 
@@ -313,8 +313,8 @@ Private Sub importLines(vbaProject As VBProject, file As Object)
 
     ' At this point compilation errors may cause a crash, so we ignore those.
     On Error Resume Next
-    c.codeModule.DeleteLines 1, c.codeModule.CountOfLines
-    c.codeModule.AddFromFile file.Path
+    c.CodeModule.DeleteLines 1, c.CodeModule.countOfLines
+    c.CodeModule.AddFromFile file.Path
     On Error GoTo 0
 End Sub
 

@@ -347,19 +347,19 @@ Private Sub btnSelecionarRange_Click()
         lstColunas.Clear
         lstColunas.ColumnCount = 3
         ReDim controles(1 To rangeSelecionado.Columns.Count + 1, 1 To 3)
-        Dim linha As Long
-        linha = 1
+        Dim Linha As Long
+        Linha = 1
         
-        controles(linha, 1) = "Campo"
-        controles(linha, 2) = "Controle"
-        controles(linha, 3) = "Requerido"
+        controles(Linha, 1) = "Campo"
+        controles(Linha, 2) = "Controle"
+        controles(Linha, 3) = "Requerido"
         
-        For linha = 1 To rangeSelecionado.Columns.Count
+        For Linha = 1 To rangeSelecionado.Columns.Count
             Me.lstColunas.AddItem
-            controles(linha + 1, 1) = rangeSelecionado.Cells(1, linha).Value
-            controles(linha + 1, 2) = "TextBox"
-            controles(linha + 1, 3) = "Não"
-        Next linha
+            controles(Linha + 1, 1) = rangeSelecionado.Cells(1, Linha).Value
+            controles(Linha + 1, 2) = "TextBox"
+            controles(Linha + 1, 3) = "Não"
+        Next Linha
         
         'validar repetição
         lstColunas.List = controles
@@ -370,25 +370,25 @@ End Sub
 
 Private Sub cboControle_Change()
     If lstColunas.ListIndex > 0 Then
-        linha = lstColunas.ListIndex
-        lstColunas.List(linha, 1) = cboControle.Text
+        Linha = lstColunas.ListIndex
+        lstColunas.List(Linha, 1) = cboControle.text
     End If
 End Sub
 
 Private Sub cbxRequerido_Click()
     If lstColunas.ListIndex > 0 Then
-        linha = lstColunas.ListIndex
-        lstColunas.List(linha, 2) = IIf(cbxRequerido.Value, "Sim", "Não")
+        Linha = lstColunas.ListIndex
+        lstColunas.List(Linha, 2) = IIf(cbxRequerido.Value, "Sim", "Não")
     End If
 End Sub
 
 Private Sub lstColunas_Click()
-    Dim linha As Long
+    Dim Linha As Long
     If lstColunas.ListIndex > 0 Then
-        linha = lstColunas.ListIndex
-        txtNome.Text = lstColunas.List(linha, 0)
-        cboControle.Text = lstColunas.List(linha, 1)
-        cbxRequerido.Value = IIf(lstColunas.List(linha, 2) = "Sim", True, False)
+        Linha = lstColunas.ListIndex
+        txtNome.text = lstColunas.List(Linha, 0)
+        cboControle.text = lstColunas.List(Linha, 1)
+        cbxRequerido.Value = IIf(lstColunas.List(Linha, 2) = "Sim", True, False)
     End If
 End Sub
 
@@ -401,11 +401,11 @@ Private Sub UserForm_Initialize()
 End Sub
 
 Private Sub cmdGerarFormulario_Click()
-    If Trim(txtNomeFormulario.Text) <> "" Then
+    If Trim(txtNomeFormulario.text) <> "" Then
         If IsVarArrayEmpty(controles) Then
             MsgBox "E onde estão os campos?"
         Else
-            Call CriarForm(Trim(txtNomeFormulario.Text))
+            Call CriarForm(Trim(txtNomeFormulario.text))
         End If
     Else
         MsgBox "O nome do formulário é requerido"
@@ -506,8 +506,8 @@ Private Sub CriarForm(ByVal NomeForm As String)
     End With
      
      '//Add code on the form for the CommandButtons
-    With MyUserForm.codeModule
-        X = .CountOfLines
+    With MyUserForm.CodeModule
+        X = .countOfLines
         For i = 1 To UBound(arrayModuloForm)
             .InsertLines X + i, arrayModuloForm(i)
         Next i
