@@ -376,28 +376,40 @@ End Sub
 
 Private Sub CriarForm(ByVal NomeForm As String)
      
+    Dim newBook As Workbook
+    Set newBook = Application.Workbooks.Add
     Dim MyUserForm As VBComponent
+    'botões
     Dim btnOk As MSForms.CommandButton
     Dim btnCancelar As MSForms.CommandButton
-    Dim MyComboBox As MSForms.ComboBox
+    Dim btnPesquisar As MSForms.CommandButton
+    Dim btnPrimeiro As MSForms.CommandButton
+    Dim btnAnterior As MSForms.CommandButton
+    Dim btnProximo As MSForms.CommandButton
+    Dim btnUltimo As MSForms.CommandButton
+    'options
+    Dim optNovo As MSForms.OptionButton
+    Dim optAlterar As MSForms.OptionButton
+    Dim optExcluir As MSForms.OptionButton
+    'labels
+    Dim lblStatus As MSForms.Label
     Dim N As Integer, MaxWidth As Long
     
     NomeForm = "ufm" & NomeForm
      
     'verifica se o formulário exite
-    For N = 1 To ActiveWorkbook.VBProject.VBComponents.Count
-        If ActiveWorkbook.VBProject.VBComponents(N).name = NomeForm Then
+    For N = 1 To newBook.VBProject.VBComponents.Count
+        If newBook.VBProject.VBComponents(N).name = NomeForm Then
             MsgBox "Já existe um formulário com o mesmo nome"
             Exit Sub
         End If
     Next N
      
      'Cria o userform
-    Set MyUserForm = ActiveWorkbook.VBProject _
-    .VBComponents.Add(vbext_ct_MSForm)
+    Set MyUserForm = newBook.VBProject.VBComponents.Add(vbext_ct_MSForm)
     With MyUserForm
         .Properties("Height") = lstColunas.ListCount * 45
-        .Properties("Width") = 300
+        .Properties("Width") = 333
         On Error Resume Next
         .name = NomeForm
         .Properties("Caption") = "Formulário - " & NomeForm
@@ -437,37 +449,120 @@ Private Sub CriarForm(ByVal NomeForm As String)
         
         margemTopo = margemTopo + margeTopoInicial + (alturaControle * 2)
     Next i
-    
-'    '//Add a combo box on the form
-'    Set MyComboBox = MyUserForm.Designer.Controls.Add("Forms.ComboBox.1")
-'    With MyComboBox
-'        .Name = "Combo1"
-'        .Left = 10
-'        .Top = 10
-'        .Height = 16
-'        .Width = 100
-'    End With
-     
-     '//Add a Cancel button to the form
+ 
     Set btnCancelar = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
     With btnCancelar
+        .name = "btnCancelar"
         .Caption = "Cancelar"
         .Height = 24
         .Width = 72
-        .Left = 215
-        .Top = 10
+        .Left = 234
+        .Top = 24
     End With
      
-     '//Add an OK button to the form
     Set btnOk = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
     With btnOk
+        .name = "btnOk"
         .Caption = "OK"
         .Height = 24
         .Width = 72
-        .Left = 215
-        .Top = 44
+        .Left = 234
+        .Top = 54
     End With
-     
+    
+    Set optNovo = MyUserForm.Designer.Controls.Add("forms.OptionButton.1")
+    With optNovo
+        .name = "optNovo"
+        .Caption = "Novo"
+        .Height = 18
+        .Width = 70
+        .Left = 234
+        .Top = 84
+        .GroupName = "Operacoes"
+    End With
+    
+    Set optAlterar = MyUserForm.Designer.Controls.Add("forms.OptionButton.1")
+    With optAlterar
+        .name = "optAlterar"
+        .Caption = "Alterar"
+        .Height = 18
+        .Width = 70
+        .Left = 234
+        .Top = 102
+        .GroupName = "Operacoes"
+    End With
+    
+    Set optExcluir = MyUserForm.Designer.Controls.Add("forms.OptionButton.1")
+    With optExcluir
+        .name = "optExcluir"
+        .Caption = "Excluir"
+        .Height = 18
+        .Width = 70
+        .Left = 234
+        .Top = 120
+        .GroupName = "Operacoes"
+    End With
+    
+    Set lblStatus = MyUserForm.Designer.Controls.Add("forms.Label.1")
+    With lblStatus
+        .name = "lblStatus"
+        .Caption = ""
+        .Height = 24
+        .Width = 72
+        .Left = 234
+        .Top = 144
+    End With
+    
+    Set btnPesquisar = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+    With btnPesquisar
+        .name = "btnPesquisar"
+        .Caption = "Pesquisar"
+        .Height = 24
+        .Width = 72
+        .Left = 234
+        .Top = 168
+    End With
+    
+    Set btnPrimeiro = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+    With btnPrimeiro
+        .name = "btnPrimeiro"
+        .Caption = "Primeiro"
+        .Height = 24
+        .Width = 72
+        .Left = 234
+        .Top = 198
+    End With
+    
+    Set btnAnterior = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+    With btnAnterior
+        .name = "btnAnterior"
+        .Caption = "Anterior"
+        .Height = 24
+        .Width = 72
+        .Left = 234
+        .Top = 228
+    End With
+    
+    Set btnProximo = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+    With btnProximo
+        .name = "btnProximo"
+        .Caption = "Próximo"
+        .Height = 24
+        .Width = 72
+        .Left = 234
+        .Top = 258
+    End With
+    
+    Set btnUltimo = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+    With btnUltimo
+        .name = "btnUltimo"
+        .Caption = "Último"
+        .Height = 24
+        .Width = 72
+        .Left = 234
+        .Top = 288
+    End With
+    
     'código do form
     With MyUserForm.CodeModule
         countOfLines = .countOfLines
@@ -484,7 +579,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
                 'guarda a referencia da linha com o conteudo
                 linhaNomeControle = i
                 For j = 2 To UBound(controles)
-                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), controles(j, colunaControle))
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
                     linhaAInserir = Replace(arrayModuloFuncaoLimpaControles(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
                     Call InsertLine(MyUserForm, linhaAInserir)
                 Next j
@@ -501,7 +596,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
                 'guarda a referencia da linha com o conteudo
                 linhaNomeControle = i
                 For j = 2 To UBound(controles)
-                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j, colunaControle))
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
                     tipoDadoControle = ObtemTipoDadoCampo(controles(j, colunaControle))
                     linhaAInserir = Replace(arrayModuloFuncaoControlDataType(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
                     linhaAInserir = Replace(linhaAInserir, "[TIPO_DADO_CONTROLE]", tipoDadoControle)
@@ -520,7 +615,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
                 'guarda a referencia da linha com o conteudo
                 linhaNomeControle = i
                 For j = 2 To UBound(controles)
-                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j, colunaControle))
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
                     nomeCampo = ObtemTipoDadoCampo(controles(j, colunaCampo))
                     linhaAInserir = Replace(arrayModuloFuncaoSetValues(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
                     linhaAInserir = Replace(linhaAInserir, "[NOME_CAMPO]", nomeCampo)
@@ -539,8 +634,8 @@ Private Sub CriarForm(ByVal NomeForm As String)
                 'guarda a referencia da linha com o conteudo
                 linhaNomeControle = i
                 For j = 2 To UBound(controles)
-                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j, colunaControle))
-                    nomeCampo = ObtemTipoDadoCampo(controles(j, colunaCampo))
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
+                    nomeCampo = controles(j, colunaCampo)
                     linhaAInserir = Replace(arrayModuloFuncaoGetValues(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
                     linhaAInserir = Replace(linhaAInserir, "[NOME_CAMPO]", nomeCampo)
                     Call InsertLine(MyUserForm, linhaAInserir)
@@ -611,7 +706,7 @@ Private Function ObtemNomeControle(ByVal campo As String, ByVal controle As Stri
         Case "TextBox"
             prefixo = "txt"
         Case "ComboBox"
-            prefixo = ""
+            prefixo = "cbo"
         Case "ListBox"
             prefixo = "lst"
         Case "CheckBox"
