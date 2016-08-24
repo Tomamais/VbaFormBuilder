@@ -394,7 +394,213 @@ Private Sub CriarForm(ByVal NomeForm As String)
     'labels
     Dim lblStatus As MSForms.Label
     Dim N As Integer, MaxWidth As Long
+    Dim nomeControle As String
+    Dim tipoDadoControle As String
+    Dim nomeCampo As String
+    Dim linhaAInserir As String
+    Dim linhaNomeControle As Long
+    Dim nomeCampoPrivado As String
+    Dim i As Long
+    Dim j As Integer
+    Dim margemTopo As Integer
+    Dim margeTopoInicial
+    Dim distanciaEntre As Integer
+    Dim margemEsquerda As Integer
+    Dim alturaControle As Integer
+    Dim larguraControle As Integer
     
+    countOfLines = 0
+    
+    'gera a classe
+    Dim classe As VBComponent
+    Set classe = newBook.VBProject.VBComponents.Add(vbext_ct_ClassModule)
+    classe.name = NomeForm
+    
+    Call InsertLine(classe, "Private mrstRecordset As Recordset")
+    Call InsertLine(classe, "Private mbooLoaded As Boolean")
+    Call InsertLine(classe, "Private mdbCurrentDb As Database")
+    
+    'campos
+    For i = 2 To UBound(controles)
+        nomeCampo = controles(i, colunaCampo)
+        nomeControle = ObtemNomeControle(nomeCampo, lstColunas.List(i - 1, colunaControle - 1))
+        tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
+        nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
+        'privados
+        Call InsertLine(classe, "")
+        Call InsertLine(classe, "Private " & nomeCampoPrivado & " As " & tipoDadoControle)
+        'propriedades
+        Call InsertLine(classe, "")
+        Call InsertLine(classe, "Public Property Get " & nomeCampo & "() As " & tipoDadoControle)
+        Call InsertLine(classe, "    " & nomeCampo & " = " & nomeCampoPrivado)
+        Call InsertLine(classe, "End Property")
+        If nomeCampo <> ChavePrimaria Then
+            Call InsertLine(classe, "")
+            Call InsertLine(classe, "Public Property Let " & nomeCampo & "(rData As " & tipoDadoControle & ")")
+            Call InsertLine(classe, "    " & nomeCampoPrivado & " = rData")
+            Call InsertLine(classe, "End Property")
+        End If
+    Next i
+    'função Load
+    Call InsertLine(classe, "Private Sub Load()")
+    Call InsertLine(classe, "    With Recordset")
+    For i = 2 To UBound(controles)
+        nomeCampo = controles(i, colunaCampo)
+        tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
+        nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
+        If nomeCampo = ChavePrimaria Then
+            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields("" & nomeCampo & "").Value)")
+        Else
+            Call InsertLine(classe, "        Me.Admissao = Nz(.Fields("" & nomeCampo & "").Value)")
+        End If
+    Next i
+    Call InsertLine(classe, "    End With")
+    Call InsertLine(classe, "    mbooLoaded = True")
+    Call InsertLine(classe, "End Sub")
+    Call InsertLine(classe, "")
+    
+    'função Update
+    Call InsertLine(classe, "Public Function Update() As Boolean")
+    Call InsertLine(classe, "On Error GoTo HandleMessage")
+    Call InsertLine(classe, "    Dim updated As Boolean")
+    Call InsertLine(classe, "    With Recordset")
+    Call InsertLine(classe, "        If mbooLoaded = True Then")
+    Call InsertLine(classe, "            .Edit")
+    Call InsertLine(classe, "        Else")
+    Call InsertLine(classe, "            .AddNew")
+    Call InsertLine(classe, "        End If")
+    For i = 2 To UBound(controles)
+        nomeCampo = controles(i, colunaCampo)
+        tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
+        nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
+        eRequerido = controles(i, colunaRequerido) = "Sim"
+        If nomeCampo = ChavePrimaria Then
+            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields("" & nomeCampo & "").Value)")
+        Else
+            If eRequerido Then
+                Call InsertLine(classe, "        .Fields(""" & nomeCampo & """).Value = NullIfEmptyString(Me." & nomeCampo & ")")
+            Else
+                Call InsertLine(classe, "        .Fields(""" & nomeCampo & """).Value = Me." & nomeCampo)
+            End If
+        End If
+    Next i
+
+    Call InsertLine(classe, "        .Update")
+    Call InsertLine(classe, "    End With")
+    Call InsertLine(classe, "    mbooLoaded = True")
+    Call InsertLine(classe, "    updated = True")
+    Call InsertLine(classe, "HandleExit:")
+    Call InsertLine(classe, "    Update = updated")
+    Call InsertLine(classe, "    Exit Function")
+    Call InsertLine(classe, "HandleMessage:")
+    Call InsertLine(classe, "    MsgBox Err.Description")
+    Call InsertLine(classe, "    GoTo HandleExit")
+    Call InsertLine(classe, "End Function")
+    Call InsertLine(classe, "")
+    
+    Call InsertLine(classe, "Public Property Get CurrentDb() As Database")
+    Call InsertLine(classe, "    If mdbCurrentDb Is Nothing Then")
+    Call InsertLine(classe, "        Set mdbCurrentDb = DBEngine.OpenDatabase(Range(""PASTA"") & Range(""ARQUIVO""))")
+    Call InsertLine(classe, "    End If")
+    Call InsertLine(classe, "    Set CurrentDb = mdbCurrentDb")
+    Call InsertLine(classe, "End Property")
+    Call InsertLine(classe, "")
+    
+    'demais funções
+    Call InsertLine(classe, "Public Sub AddNew()")
+    Call InsertLine(classe, "    mbooLoaded = False")
+    Call InsertLine(classe, "End Sub")
+    Call InsertLine(classe, "Public Function FindFirst(Optional Criteria As Variant) As Boolean")
+    Call InsertLine(classe, "    If IsMissing(Criteria) Then")
+    Call InsertLine(classe, "        Recordset.MoveFirst")
+    Call InsertLine(classe, "        FindFirst = Not Recordset.EOF")
+    Call InsertLine(classe, "    Else")
+    Call InsertLine(classe, "        Recordset.FindFirst Criteria")
+    Call InsertLine(classe, "        FindFirst = Not Recordset.NoMatch")
+    Call InsertLine(classe, "    End If")
+    Call InsertLine(classe, "    If FindFirst Then Load")
+    Call InsertLine(classe, "End Function")
+    Call InsertLine(classe, "Public Function FindLast(Optional Criteria As Variant) As Boolean")
+    Call InsertLine(classe, "    If IsMissing(Criteria) Then")
+    Call InsertLine(classe, "        Recordset.MoveLast")
+    Call InsertLine(classe, "        FindLast = Not Recordset.EOF")
+    Call InsertLine(classe, "    Else")
+    Call InsertLine(classe, "        Recordset.FindLast Criteria")
+    Call InsertLine(classe, "        FindLast = Not Recordset.NoMatch")
+    Call InsertLine(classe, "    End If")
+    Call InsertLine(classe, "    If FindLast Then Load")
+    Call InsertLine(classe, "End Function")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "Public Function MoveFirst() As Boolean")
+    Call InsertLine(classe, "    Recordset.MoveFirst")
+    Call InsertLine(classe, "    Load")
+    Call InsertLine(classe, "End Function")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "'Ocorre quando a classe é instanciada")
+    Call InsertLine(classe, "Private Sub Class_Initialize()")
+    Call InsertLine(classe, "    Set Recordset = CurrentDb.OpenRecordset("" & NomeForm & "", dbOpenDynaset)")
+    Call InsertLine(classe, "End Sub")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "'Ocorre quando a classe é tirada da memória (Set = Nothing)")
+    Call InsertLine(classe, "Private Sub Class_Terminate()")
+    Call InsertLine(classe, "    Recordset.Close")
+    Call InsertLine(classe, "    Set Recordset = Nothing")
+    Call InsertLine(classe, "End Sub")
+    Call InsertLine(classe, "Function NullIfEmptyString(str As String) As Variant")
+    Call InsertLine(classe, "    Dim strTrimmed As String: strTrimmed = Trim(str)")
+    Call InsertLine(classe, "    If Len(strTrimmed) = 0 Then")
+    Call InsertLine(classe, "        NullIfEmptyString = Null")
+    Call InsertLine(classe, "    Else")
+    Call InsertLine(classe, "        NullIfEmptyString = strTrimmed")
+    Call InsertLine(classe, "    End If")
+    Call InsertLine(classe, "End Function")
+    Call InsertLine(classe, "Public Function MoveLast() As Boolean")
+    Call InsertLine(classe, "    Recordset.MoveLast")
+    Call InsertLine(classe, "    Load")
+    Call InsertLine(classe, "End Function")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "Public Function MoveNext() As Boolean")
+    Call InsertLine(classe, "    Dim result As Boolean")
+    Call InsertLine(classe, "    If Not Recordset.EOF And Not (Recordset.AbsolutePosition + 1) >= Recordset.RecordCount Then")
+    Call InsertLine(classe, "        Recordset.MoveNext")
+    Call InsertLine(classe, "        Load")
+    Call InsertLine(classe, "        result = True")
+    Call InsertLine(classe, "    End If")
+    Call InsertLine(classe, "    MoveNext = result")
+    Call InsertLine(classe, "End Function")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "Public Function MovePrevious() As Boolean")
+    Call InsertLine(classe, "    Dim result As Boolean")
+    Call InsertLine(classe, "    If Not Recordset.BOF And Recordset.AbsolutePosition > 0 Then")
+    Call InsertLine(classe, "        Recordset.MovePrevious")
+    Call InsertLine(classe, "        Load")
+    Call InsertLine(classe, "        result = True")
+    Call InsertLine(classe, "    End If")
+    Call InsertLine(classe, "    MovePrevious = result")
+    Call InsertLine(classe, "End Function")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "Public Sub Delete()")
+    Call InsertLine(classe, "    Recordset.Delete")
+    Call InsertLine(classe, "End Sub")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "Public Property Get RecordSetWithFilter() As Recordset")
+    Call InsertLine(classe, "    Dim rstFiltered As Recordset")
+    Call InsertLine(classe, "    Set rstFiltered = Recordset.OpenRecordset")
+    Call InsertLine(classe, "    If rstFiltered.RecordCount > 0 Then")
+    Call InsertLine(classe, "        rstFiltered.MoveLast")
+    Call InsertLine(classe, "        rstFiltered.MoveFirst")
+    Call InsertLine(classe, "    End If")
+    Call InsertLine(classe, "    Set RecordSetWithFilter = rstFiltered")
+    Call InsertLine(classe, "End Property")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "Public Property Get Filter() As String")
+    Call InsertLine(classe, "    Filter = Recordset.Filter")
+    Call InsertLine(classe, "End Property")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "Public Property Let Filter(rFilter As String)")
+    Call InsertLine(classe, "    Recordset.Filter = rFilter")
+    Call InsertLine(classe, "End Property")
+
     NomeForm = "ufm" & NomeForm
      
     'verifica se o formulário exite
@@ -416,9 +622,6 @@ Private Sub CriarForm(ByVal NomeForm As String)
     End With
     
     'cria os controles referentes aos campos
-    Dim i As Long
-    Dim j As Integer
-    Dim margemTopo As Integer, margeTopoInicial, distanciaEntre As Integer, margemEsquerda As Integer, alturaControle As Integer, larguraControle As Integer
     margeTopoInicial = 10
     margemTopo = 10
     distanciaEntre = 2
@@ -570,8 +773,6 @@ Private Sub CriarForm(ByVal NomeForm As String)
             Call InsertLine(MyUserForm, ReplaceToken(arrayModuloForm(i)))
         Next i
         
-        Dim nomeControle As String, tipoDadoControle As String, nomeCampo As String, linhaAInserir As String, linhaNomeControle As Long
-    
         'função LimpaControles
         i = 1
         While i <= UBound(arrayModuloFuncaoLimpaControles)
@@ -653,9 +854,9 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Unload Me
 End Sub
 
-Private Sub InsertLine(ByRef Form As VBComponent, ByVal Linha As String)
+Private Sub InsertLine(ByRef componente As VBComponent, ByVal Linha As String)
     countOfLines = countOfLines + 1
-    Call Form.CodeModule.InsertLines(countOfLines, Linha)
+    Call componente.CodeModule.InsertLines(countOfLines, Linha)
     'Debug.Print Linha
 End Sub
 
@@ -746,3 +947,23 @@ Private Function ObtemTipoDadoCampo(ByVal tipo As String) As String
     ObtemTipoDadoCampo = tipo
 End Function
 
+
+Private Function ObtemAcronimoTipo(ByVal tipo As String) As String
+    Select Case tipo
+        Case "Integer"
+            tipo = "int"
+        Case "String"
+            tipo = "str"
+        Case "Long"
+            tipo = "lng"
+        Case "Date"
+            tipo = "dt"
+        Case "Double"
+            tipo = "dbl"
+        Case "Boolean"
+            tipo = "boo"
+        Case Else
+            tipo = "var"
+    End Select
+    ObtemAcronimoTipo = tipo
+End Function
