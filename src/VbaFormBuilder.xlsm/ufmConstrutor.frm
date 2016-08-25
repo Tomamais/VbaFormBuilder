@@ -49,11 +49,11 @@ Private Sub Init()
     arrayModuloForm(16) = "    "
     arrayModuloForm(17) = "    'botoes de navegacao"
     arrayModuloForm(18) = "    btnOk.Enabled = Edicao"
-    arrayModuloForm(19) = "    btnCancel.Enabled = Edicao"
+    arrayModuloForm(19) = "    btnCancelar.Enabled = Edicao"
     arrayModuloForm(20) = "    btnPrimeiro.Enabled = Not Edicao"
     arrayModuloForm(21) = "    btnAnterior.Enabled = Not Edicao"
     arrayModuloForm(22) = "    btnProximo.Enabled = Not Edicao"
-    arrayModuloForm(23) = "    btnUtimo.Enabled = Not Edicao"
+    arrayModuloForm(23) = "    btnUltimo.Enabled = Not Edicao"
     arrayModuloForm(24) = "    'os options buttons de operacao"
     arrayModuloForm(25) = "    optAlterar.Enabled = Not Edicao"
     arrayModuloForm(26) = "    optExcluir.Enabled = Not Edicao"
@@ -86,7 +86,7 @@ Private Sub Init()
     arrayModuloForm(53) = "    If cls[NOME_FORM].MoveNext Then Call SetValues(cls[NOME_FORM])"
     arrayModuloForm(54) = "End Sub"
     arrayModuloForm(55) = ""
-    arrayModuloForm(56) = "Private Sub btnUtimo_Click()"
+    arrayModuloForm(56) = "Private Sub btnUltimo_Click()"
     arrayModuloForm(57) = "    cls[NOME_FORM].MoveLast"
     arrayModuloForm(58) = "    Call SetValues(cls[NOME_FORM])"
     arrayModuloForm(59) = "End Sub"
@@ -112,7 +112,7 @@ Private Sub Init()
     arrayModuloForm(79) = "    AlteraModo Edicao:=False"
     arrayModuloForm(80) = "End Sub"
     arrayModuloForm(81) = ""
-    arrayModuloForm(82) = "Private Sub btnCancel_Click()"
+    arrayModuloForm(82) = "Private Sub btnCancelar_Click()"
     arrayModuloForm(83) = "    AlteraModo Edicao:=False"
     arrayModuloForm(84) = "    cls[NOME_FORM].MovePrevious"
     arrayModuloForm(85) = "    Call SetValues(cls[NOME_FORM])"
@@ -412,6 +412,53 @@ Private Sub CriarForm(ByVal NomeForm As String)
     countOfLines = 0
     
     'gera a classe
+    Dim modEntidade As VBComponent
+    Set modEntidade = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
+    modEntidade.name = "mod" & NomeForm
+    
+    Call InsertLine(modEntidade, "Sub AbreForm" & NomeForm & "()")
+    Call InsertLine(modEntidade, "    'variável do tipo da Classe " & NomeForm)
+    Call InsertLine(modEntidade, "    Dim udt" & NomeForm & " As " & NomeForm)
+    Call InsertLine(modEntidade, "    'Cria a isntância")
+    Call InsertLine(modEntidade, "    Set udt" & NomeForm & " = New " & NomeForm)
+    Call InsertLine(modEntidade, "    ")
+    Call InsertLine(modEntidade, "    udt" & NomeForm & ".MoveLast")
+    Call InsertLine(modEntidade, "    udt" & NomeForm & ".MoveFirst")
+    Call InsertLine(modEntidade, "    'Atribui uma instância da classe " & NomeForm & " ao form")
+    Call InsertLine(modEntidade, "    ufm" & NomeForm & ".SetValues udt" & NomeForm)
+    Call InsertLine(modEntidade, "    'Mostra o form")
+    Call InsertLine(modEntidade, "    ufm" & NomeForm & ".Show")
+    Call InsertLine(modEntidade, "End Sub")
+    
+    countOfLines = 0
+    
+    'gera a classe
+    Dim modAuxiliar As VBComponent
+    Set modAuxiliar = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
+    modAuxiliar.name = "modAuxiliar"
+    
+    Call InsertLine(modAuxiliar, "Public Function Nz(ByVal Value As Variant) As Variant")
+    Call InsertLine(modAuxiliar, "    If IsNull(Value) Then Value = 0")
+    Call InsertLine(modAuxiliar, "    Nz = Value")
+    Call InsertLine(modAuxiliar, "End Function")
+
+    countOfLines = 0
+    
+    Dim modTypes As VBComponent
+    Set modTypes = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
+    modTypes.name = "modTypes"
+    
+    Call InsertLine(modTypes, "Public Type Atendimento")
+    For i = 2 To UBound(controles)
+        nomeCampo = controles(i, colunaCampo)
+        tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
+        Call InsertLine(modTypes, "    " & nomeCampo & " As " & tipoDadoControle)
+    Next i
+    Call InsertLine(modTypes, "End Type")
+    
+    countOfLines = 0
+    
+    'gera a classe
     Dim classe As VBComponent
     Set classe = newBook.VBProject.VBComponents.Add(vbext_ct_ClassModule)
     classe.name = NomeForm
@@ -420,16 +467,23 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(classe, "Private mbooLoaded As Boolean")
     Call InsertLine(classe, "Private mdbCurrentDb As Database")
     
-    'campos
+    'campos privados
     For i = 2 To UBound(controles)
         nomeCampo = controles(i, colunaCampo)
         nomeControle = ObtemNomeControle(nomeCampo, lstColunas.List(i - 1, colunaControle - 1))
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
         nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
-        'privados
         Call InsertLine(classe, "")
         Call InsertLine(classe, "Private " & nomeCampoPrivado & " As " & tipoDadoControle)
-        'propriedades
+    Next i
+    
+    'propriedades
+    For i = 2 To UBound(controles)
+        nomeCampo = controles(i, colunaCampo)
+        nomeControle = ObtemNomeControle(nomeCampo, lstColunas.List(i - 1, colunaControle - 1))
+        tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
+        nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
+        
         Call InsertLine(classe, "")
         Call InsertLine(classe, "Public Property Get " & nomeCampo & "() As " & tipoDadoControle)
         Call InsertLine(classe, "    " & nomeCampo & " = " & nomeCampoPrivado)
@@ -441,6 +495,15 @@ Private Sub CriarForm(ByVal NomeForm As String)
             Call InsertLine(classe, "End Property")
         End If
     Next i
+    
+    Call InsertLine(classe, "Private Property Get Recordset() As Recordset")
+    Call InsertLine(classe, "    Set Recordset = mrstRecordset")
+    Call InsertLine(classe, "End Property")
+    Call InsertLine(classe, "")
+    Call InsertLine(classe, "Private Property Set Recordset(rData As Recordset)")
+    Call InsertLine(classe, "    Set mrstRecordset = rData")
+    Call InsertLine(classe, "End Property")
+    
     'função Load
     Call InsertLine(classe, "Private Sub Load()")
     Call InsertLine(classe, "    With Recordset")
@@ -449,9 +512,9 @@ Private Sub CriarForm(ByVal NomeForm As String)
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
         nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
         If nomeCampo = ChavePrimaria Then
-            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields("" & nomeCampo & "").Value)")
+            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields(""" & nomeCampo & """).Value)")
         Else
-            Call InsertLine(classe, "        Me.Admissao = Nz(.Fields("" & nomeCampo & "").Value)")
+            Call InsertLine(classe, "        Me." & nomeCampo & " = Nz(.Fields(""" & nomeCampo & """).Value)")
         End If
     Next i
     Call InsertLine(classe, "    End With")
@@ -475,7 +538,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
         nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
         eRequerido = controles(i, colunaRequerido) = "Sim"
         If nomeCampo = ChavePrimaria Then
-            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields("" & nomeCampo & "").Value)")
+            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields(""" & nomeCampo & """).Value)")
         Else
             If eRequerido Then
                 Call InsertLine(classe, "        .Fields(""" & nomeCampo & """).Value = NullIfEmptyString(Me." & nomeCampo & ")")
@@ -500,7 +563,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     
     Call InsertLine(classe, "Public Property Get CurrentDb() As Database")
     Call InsertLine(classe, "    If mdbCurrentDb Is Nothing Then")
-    Call InsertLine(classe, "        Set mdbCurrentDb = DBEngine.OpenDatabase(Range(""PASTA"") & Range(""ARQUIVO""))")
+    Call InsertLine(classe, "        Set mdbCurrentDb = DBEngine.OpenDatabase(ThisWorkBook.Worksheets(""Config"").Range(""PASTA"") & ThisWorkBook.Worksheets(""Config"").Range(""ARQUIVO""))")
     Call InsertLine(classe, "    End If")
     Call InsertLine(classe, "    Set CurrentDb = mdbCurrentDb")
     Call InsertLine(classe, "End Property")
@@ -538,7 +601,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(classe, "")
     Call InsertLine(classe, "'Ocorre quando a classe é instanciada")
     Call InsertLine(classe, "Private Sub Class_Initialize()")
-    Call InsertLine(classe, "    Set Recordset = CurrentDb.OpenRecordset("" & NomeForm & "", dbOpenDynaset)")
+    Call InsertLine(classe, "    Set Recordset = CurrentDb.OpenRecordset(""" & NomeForm & """, dbOpenDynaset)")
     Call InsertLine(classe, "End Sub")
     Call InsertLine(classe, "")
     Call InsertLine(classe, "'Ocorre quando a classe é tirada da memória (Set = Nothing)")
@@ -817,7 +880,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
                 linhaNomeControle = i
                 For j = 2 To UBound(controles)
                     nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
-                    nomeCampo = ObtemTipoDadoCampo(controles(j, colunaCampo))
+                    nomeCampo = controles(j, colunaCampo)
                     linhaAInserir = Replace(arrayModuloFuncaoSetValues(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
                     linhaAInserir = Replace(linhaAInserir, "[NOME_CAMPO]", nomeCampo)
                     Call InsertLine(MyUserForm, linhaAInserir)
@@ -837,9 +900,11 @@ Private Sub CriarForm(ByVal NomeForm As String)
                 For j = 2 To UBound(controles)
                     nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
                     nomeCampo = controles(j, colunaCampo)
-                    linhaAInserir = Replace(arrayModuloFuncaoGetValues(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
-                    linhaAInserir = Replace(linhaAInserir, "[NOME_CAMPO]", nomeCampo)
-                    Call InsertLine(MyUserForm, linhaAInserir)
+                        If nomeCampo <> ChavePrimaria Then
+                        linhaAInserir = Replace(arrayModuloFuncaoGetValues(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
+                        linhaAInserir = Replace(linhaAInserir, "[NOME_CAMPO]", nomeCampo)
+                        Call InsertLine(MyUserForm, linhaAInserir)
+                    End If
                 Next j
             Else
                 Call InsertLine(MyUserForm, ReplaceToken(arrayModuloFuncaoGetValues(i)))
@@ -848,10 +913,30 @@ Private Sub CriarForm(ByVal NomeForm As String)
         Wend
     End With
     
+    'Adiciona as referencias no novo arquivo
+    Dim ref As Reference
+    For Each ref In ThisWorkbook.VBProject.References
+        Call newBook.VBProject.References.AddFromGuid(ref.GUID, ref.Major, ref.Minor)
+    Next ref
+    
+    'Define a planilha de configuração e valores
+    Dim ws As Worksheet, rngPasta As Range, rngArquivo As Range
+    Set ws = newBook.Worksheets(1)
+    ws.name = "Config"
+    Call newBook.Names.Add("PASTA", "=Config!R1C2")
+    Call newBook.Names.Add("ARQUIVO", "=Config!R2C2")
+    ws.Cells(1, 1).Value = "Pasta:"
+    ws.Cells(2, 1).Value = "Arquivo:"
+    Dim arrayArquivo() As String
+    arrayArquivo = Split(ufmSelecionaBanco.txtCaminhoBanco.text, "\")
+    ws.Cells(2, 2).Value = arrayArquivo(UBound(arrayArquivo))
+    ws.Cells(1, 2).Value = Replace(ufmSelecionaBanco.txtCaminhoBanco.text, ws.Cells(2, 2).Value, "", Compare:=vbTextCompare)
+    
     Debug.Print "CountOfLines :" & countOfLines
     
     MsgBox NomeForm & " gerado com sucesso"
     Unload Me
+    Unload ufmSelecionaBanco
 End Sub
 
 Private Sub InsertLine(ByRef componente As VBComponent, ByVal Linha As String)
