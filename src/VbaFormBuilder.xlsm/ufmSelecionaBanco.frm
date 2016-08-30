@@ -106,6 +106,3 @@ Private Sub cboTabelas_Change()
 '    Next
 End Sub
 
-Private Sub UserForm_Click()
-
-End Sub

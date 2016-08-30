@@ -374,11 +374,14 @@ Private Sub cmdGerarFormulario_Click()
     End If
 End Sub
 
-Private Sub CriarForm(ByVal NomeForm As String)
+Private Sub CriarForm(ByVal NomeEntidade As String)
      
     Dim newBook As Workbook
     Set newBook = Application.Workbooks.Add
     Dim MyUserForm As VBComponent
+    Dim NomeForm As String
+    NomeForm = NomeEntidade
+    
     'botões
     Dim btnOk As MSForms.CommandButton
     Dim btnCancelar As MSForms.CommandButton
@@ -923,7 +926,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     End With
     
     'Formulário de Pesquisa
-        Dim NomeFormPesquisa As String
+    Dim NomeFormPesquisa As String
     Dim UserFormPesquisa As VBComponent
     NomeFormPesquisa = NomeForm & "Pesquisa"
      
@@ -962,25 +965,49 @@ Private Sub CriarForm(ByVal NomeForm As String)
         eRequerido = controles(i, colunaRequerido) = "Sim"
         nomeControle = ObtemNomeControle(nomeCampo, lstColunas.List(i - 1, colunaControle - 1))
         tipoControle = lstColunas.List(i - 1, colunaControle - 1)
-        'Rótulo
-        Set Label = UserFormPesquisa.Designer.Controls.Add("Forms.Label.1")
-        With Label
-            .Caption = controles(i, colunaCampo)
-            .name = "lbl" & controles(i, colunaCampo)
-            .Left = margemEsquerda
-            .Top = margemTopo
-            .Height = alturaControle
-            .Width = larguraControle
-        End With
-        'Controle
-        Set TextBox = UserFormPesquisa.Designer.Controls.Add("Forms." & tipoControle & ".1")
-        With TextBox
-            .name = nomeControle
-            .Left = margemEsquerda
-            .Top = margemTopo + alturaControle + distanciaEntre
-            .Height = alturaControle
-            .Width = larguraControle
-        End With
+        
+        If tipoControle = "CheckBox" Then
+            'Checkbox de filtro
+            Set CheckBox = UserFormPesquisa.Designer.Controls.Add("Forms.CheckBox.1")
+            With CheckBox
+                .Caption = controles(i, colunaCampo)
+                .name = nomeControle
+                .Left = margemEsquerda
+                .Top = margemTopo
+                .Height = alturaControle
+                .Width = larguraControle / 2
+            End With
+            'Checkbox de controle de filtro
+            Set CheckBoxFiltro = UserFormPesquisa.Designer.Controls.Add("Forms.CheckBox.1")
+            With CheckBoxFiltro
+                .Caption = "Filtra " & controles(i, colunaCampo)
+                .name = nomeControle & "Filtrar"
+                .Left = margemEsquerda + (larguraControle / 2) + 5
+                .Top = margemTopo
+                .Height = alturaControle
+                .Width = larguraControle / 2
+            End With
+        Else
+            'Rótulo
+            Set Label = UserFormPesquisa.Designer.Controls.Add("Forms.Label.1")
+            With Label
+                .Caption = controles(i, colunaCampo)
+                .name = "lbl" & controles(i, colunaCampo)
+                .Left = margemEsquerda
+                .Top = margemTopo
+                .Height = alturaControle
+                .Width = larguraControle
+            End With
+            'Controle
+            Set TextBox = UserFormPesquisa.Designer.Controls.Add("Forms." & tipoControle & ".1")
+            With TextBox
+                .name = nomeControle
+                .Left = margemEsquerda
+                .Top = margemTopo + alturaControle + distanciaEntre
+                .Height = alturaControle
+                .Width = larguraControle
+            End With
+        End If
         
         margemTopo = margemTopo + margeTopoInicial + (alturaControle * 2)
     Next i
@@ -1007,14 +1034,14 @@ Private Sub CriarForm(ByVal NomeForm As String)
     
     Set lstLista = UserFormPesquisa.Designer.Controls.Add("forms.ListBox.1")
     With lstLista
-        .name = "lst" & NomeForm
+        .name = "lst" & NomeEntidade
         .Height = alturaForm - 50
         .Width = 432
         .Left = 149.4
-        .Top = 24
+        .Top = 11
     End With
     
-    Call InsertLine(UserFormPesquisa, "Private cls" & NomeForm & " As Atendimento")
+    Call InsertLine(UserFormPesquisa, "Private cls" & NomeEntidade & " As " & NomeEntidade)
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub btnCancelar_Click()")
     Call InsertLine(UserFormPesquisa, "    Unload Me")
@@ -1026,26 +1053,26 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "    End If")
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "Private Sub lst" & NomeForm & "_DblClick(ByVal Cancel As MSForms.ReturnBoolean)")
-    Call InsertLine(UserFormPesquisa, "    If lst" & NomeForm & ".ListIndex > 0 Then")
+    Call InsertLine(UserFormPesquisa, "Private Sub lst" & NomeEntidade & "_DblClick(ByVal Cancel As MSForms.ReturnBoolean)")
+    Call InsertLine(UserFormPesquisa, "    If lst" & NomeEntidade & ".ListIndex > 0 Then")
     Call InsertLine(UserFormPesquisa, "        Dim Id As Long")
-    Call InsertLine(UserFormPesquisa, "        " & ChavePrimaria & " = CLng(lst" & NomeForm & ".List(lst" & NomeForm & ".ListIndex, 0))")
+    Call InsertLine(UserFormPesquisa, "        " & ChavePrimaria & " = CLng(lst" & NomeEntidade & ".List(lst" & NomeEntidade & ".ListIndex, 0))")
     Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "        cls" & NomeForm & ".MoveFirst")
+    Call InsertLine(UserFormPesquisa, "        cls" & NomeEntidade & ".MoveFirst")
     Call InsertLine(UserFormPesquisa, "        Do")
-    Call InsertLine(UserFormPesquisa, "            If cls" & NomeForm & ".Id = Id Then")
-    Call InsertLine(UserFormPesquisa, "                ufm" & NomeForm & ".SetValues cls" & NomeForm & "")
+    Call InsertLine(UserFormPesquisa, "            If cls" & NomeEntidade & ".Id = Id Then")
+    Call InsertLine(UserFormPesquisa, "                ufm" & NomeEntidade & ".SetValues cls" & NomeEntidade & "")
     Call InsertLine(UserFormPesquisa, "                Unload Me")
     Call InsertLine(UserFormPesquisa, "                Exit Do")
     Call InsertLine(UserFormPesquisa, "            End If")
-    Call InsertLine(UserFormPesquisa, "        Loop While cls" & NomeForm & ".MoveNext")
+    Call InsertLine(UserFormPesquisa, "        Loop While cls" & NomeEntidade & ".MoveNext")
     Call InsertLine(UserFormPesquisa, "    End If")
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub UserForm_Initialize()")
-    Call InsertLine(UserFormPesquisa, "    Set cls" & NomeForm & " = New " & NomeForm & "")
-    Call InsertLine(UserFormPesquisa, "    cls" & NomeForm & ".MoveLast")
-    Call InsertLine(UserFormPesquisa, "    cls" & NomeForm & ".MoveFirst")
+    Call InsertLine(UserFormPesquisa, "    Set cls" & NomeEntidade & " = New " & NomeEntidade & "")
+    Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".MoveLast")
+    Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".MoveFirst")
     Call InsertLine(UserFormPesquisa, "    Call PreencheListBox")
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
@@ -1055,7 +1082,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "    Dim filtros As String")
     Call InsertLine(UserFormPesquisa, "    Dim linha As Long")
     Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    lst" & NomeForm & ".Clear")
+    Call InsertLine(UserFormPesquisa, "    lst" & NomeEntidade & ".Clear")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "    'aplica os filtros")
     
@@ -1068,101 +1095,70 @@ Private Sub CriarForm(ByVal NomeForm As String)
         tipoControle = lstColunas.List(i - 1, colunaControle - 1)
         
         If nomeCampo = ChavePrimaria Then
-            Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> "" Then")
+            Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
             Call InsertLine(UserFormPesquisa, "        filtros = """ & nomeCampo & " = "" & Trim(" & nomeControle & ".Text)")
             Call InsertLine(UserFormPesquisa, "    End If")
             Call InsertLine(UserFormPesquisa, "")
         Else
-            Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> "" Then")
-            Call InsertLine(UserFormPesquisa, "        If filtros <> "" Then filtros = filtros & " And "")
-
             Select Case tipoDadoControle
                 Case "String"
+                    Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
+                    Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
                     Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " LIKE '*"" & Trim(" & nomeControle & ".Text) & ""*'""")
+                    Call InsertLine(UserFormPesquisa, "    End If")
+                    Call InsertLine(UserFormPesquisa, "")
                 Case "Date"
-                    Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " = #"" & Trim(CDate(txtAdmissao.Text)")
+                    Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
+                    Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
+                    Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " = #"" & Trim(CDate(" & nomeControle & ".Text)) & ""#""")
+                    Call InsertLine(UserFormPesquisa, "    End If")
+                    Call InsertLine(UserFormPesquisa, "")
                 Case "Boolean"
-                
+                    Call InsertLine(UserFormPesquisa, "    If " & nomeControle & "Filtrar.Value Then")
+                    Call InsertLine(UserFormPesquisa, "        If " & nomeControle & ".Value <> """" Then")
+                    Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
+                    Call InsertLine(UserFormPesquisa, "            filtros = filtros & """ & nomeCampo & " = "" & IIf(" & nomeControle & ".Value, ""True"", ""False"")")
+                    Call InsertLine(UserFormPesquisa, "        End If")
+                    Call InsertLine(UserFormPesquisa, "    End If")
                 Case Else
+                    Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
+                    Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
                     Call InsertLine(UserFormPesquisa, "        filtros = """ & nomeCampo & " = "" & Trim(" & nomeControle & ".Text)")
+                    Call InsertLine(UserFormPesquisa, "    End If")
+                    Call InsertLine(UserFormPesquisa, "")
             End Select
-            
-            
-            Call InsertLine(UserFormPesquisa, "    End If")
-            Call InsertLine(UserFormPesquisa, "")
         End If
     Next i
-    Call InsertLine(UserFormPesquisa, "    If Trim(txtCodigo.Text) <> "" Then")
-    Call InsertLine(UserFormPesquisa, "        If filtros <> "" Then filtros = filtros & " And "")
-    Call InsertLine(UserFormPesquisa, "        filtros = filtros & "Codigo LIKE '*" & Trim(txtCodigo.Text) & "*'"")
-    Call InsertLine(UserFormPesquisa, "    End If")
+    
     Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    If Trim(txtNome.Text) <> "" Then")
-    Call InsertLine(UserFormPesquisa, "        If filtros <> "" Then filtros = filtros & " And "")
-    Call InsertLine(UserFormPesquisa, "        filtros = filtros & "Nome LIKE '*" & Trim(txtNome.Text) & "*'"")
-    Call InsertLine(UserFormPesquisa, "    End If")
-    Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    If Trim(txtAdmissao.Text) <> "" Then")
-    Call InsertLine(UserFormPesquisa, "        If filtros <> "" Then filtros = filtros & " And "")
-    Call InsertLine(UserFormPesquisa, "        filtros = filtros & "Admissao = #" & Trim(CDate(txtAdmissao.Text)) & "#"")
-    Call InsertLine(UserFormPesquisa, "    End If")
-    Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    If Trim(txtNascimento.Text) <> "" Then")
-    Call InsertLine(UserFormPesquisa, "        If filtros <> "" Then filtros = filtros & " And "")
-    Call InsertLine(UserFormPesquisa, "        filtros = filtros & "Nascimento = #" & Trim(CDate(txtNascimento.Text)) & "#"")
-    Call InsertLine(UserFormPesquisa, "    End If")
-    Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    If cbxFiltrarPDD.Value Then")
-    Call InsertLine(UserFormPesquisa, "        If cbxPDD.Value <> "" Then")
-    Call InsertLine(UserFormPesquisa, "            If filtros <> "" Then filtros = filtros & " And "")
-    Call InsertLine(UserFormPesquisa, "            filtros = filtros & "PDD = " & IIf(cbxPDD.Value, "True", "False")")
-    Call InsertLine(UserFormPesquisa, "        End If")
-    Call InsertLine(UserFormPesquisa, "    End If")
-    Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    If Trim(txtTCasa.Text) <> "" Then")
-    Call InsertLine(UserFormPesquisa, "        If filtros <> "" Then filtros = filtros & " And "")
-    Call InsertLine(UserFormPesquisa, "        filtros = filtros & "TCasa = " & Trim(txtTCasa.Text)")
-    Call InsertLine(UserFormPesquisa, "    End If")
-    Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    If Trim(txtData.Text) <> "" Then")
-    Call InsertLine(UserFormPesquisa, "        If filtros <> "" Then filtros = filtros & " And "")
-    Call InsertLine(UserFormPesquisa, "        filtros = filtros & "Data = #" & Trim(CDate(txtData.Text)) & "#"")
-    Call InsertLine(UserFormPesquisa, "    End If")
-    Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    cls" & NomeForm & ".Filter = filtros")
-    Call InsertLine(UserFormPesquisa, "    Set rstFiltro = cls" & NomeForm & ".RecordSetWithFilter")
+    Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".Filter = filtros")
+    Call InsertLine(UserFormPesquisa, "    Set rstFiltro = cls" & NomeEntidade & ".RecordSetWithFilter")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "    linha = 1")
     Call InsertLine(UserFormPesquisa, "    ReDim arrayItems(1 To rstFiltro.RecordCount + 1, 1 To rstFiltro.Fields.Count)")
-    Call InsertLine(UserFormPesquisa, "    Me.lst" & NomeForm & ".ColumnCount = rstFiltro.Fields.Count")
+    Call InsertLine(UserFormPesquisa, "    Me.lst" & NomeEntidade & ".ColumnCount = rstFiltro.Fields.Count")
     Call InsertLine(UserFormPesquisa, "    'colunas")
-    Call InsertLine(UserFormPesquisa, "    arrayItems(linha, 1) = "Id"")
-    Call InsertLine(UserFormPesquisa, "    arrayItems(linha, 2) = "Codigo"")
-    Call InsertLine(UserFormPesquisa, "    arrayItems(linha, 3) = "Nome"")
-    Call InsertLine(UserFormPesquisa, "    arrayItems(linha, 4) = "Admissao"")
-    Call InsertLine(UserFormPesquisa, "    arrayItems(linha, 5) = "Nascimento"")
-    Call InsertLine(UserFormPesquisa, "    arrayItems(linha, 6) = "PDD"")
-    Call InsertLine(UserFormPesquisa, "    arrayItems(linha, 7) = "TCasa"")
-    Call InsertLine(UserFormPesquisa, "    arrayItems(linha, 8) = "Data"")
+    For i = 2 To UBound(controles)
+        nomeCampo = controles(i, colunaCampo)
+        Call InsertLine(UserFormPesquisa, "    arrayItems(linha, " & i - 1 & ") = """ & nomeCampo & """")
+    Next i
+    
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "    linha = 2")
     Call InsertLine(UserFormPesquisa, "    'linhas")
     Call InsertLine(UserFormPesquisa, "    Do While Not rstFiltro.EOF")
-    Call InsertLine(UserFormPesquisa, "        arrayItems(linha, 1) = rstFiltro!Id")
-    Call InsertLine(UserFormPesquisa, "        arrayItems(linha, 2) = rstFiltro!Codigo")
-    Call InsertLine(UserFormPesquisa, "        arrayItems(linha, 3) = rstFiltro!Nome")
-    Call InsertLine(UserFormPesquisa, "        arrayItems(linha, 4) = rstFiltro!Admissao")
-    Call InsertLine(UserFormPesquisa, "        arrayItems(linha, 5) = rstFiltro!Nascimento")
-    Call InsertLine(UserFormPesquisa, "        arrayItems(linha, 6) = IIf(rstFiltro!PDD, "Sim", "Não")")
-    Call InsertLine(UserFormPesquisa, "        arrayItems(linha, 7) = rstFiltro!TCasa")
-    Call InsertLine(UserFormPesquisa, "        arrayItems(linha, 8) = rstFiltro!Data")
+    For i = 2 To UBound(controles)
+        nomeCampo = controles(i, colunaCampo)
+        Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = rstFiltro!" & nomeCampo)
+    Next i
+    
     Call InsertLine(UserFormPesquisa, "        linha = linha + 1")
     Call InsertLine(UserFormPesquisa, "        rstFiltro.MoveNext")
     Call InsertLine(UserFormPesquisa, "    Loop")
     Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    Me.lst" & NomeForm & ".List = arrayItems()")
+    Call InsertLine(UserFormPesquisa, "    Me.lst" & NomeEntidade & ".List = arrayItems()")
     Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "    cls" & NomeForm & ".Filter = """)
+    Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".Filter = """)
     Call InsertLine(UserFormPesquisa, "    Set rstFiltro = Nothing")
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
@@ -1174,12 +1170,12 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "        If IsInputControl(ctl) Then")
     Call InsertLine(UserFormPesquisa, "            If IsRequired(ctl) Then")
     Call InsertLine(UserFormPesquisa, "                If Not HasValue(ctl) Then")
-    Call InsertLine(UserFormPesquisa, "                    strMessage = ControlName(ctl) & " é obrigatório"")
+    Call InsertLine(UserFormPesquisa, "                    strMessage = ControlName(ctl) & "" é obrigatório""")
     Call InsertLine(UserFormPesquisa, "                End If")
     Call InsertLine(UserFormPesquisa, "            End If")
     Call InsertLine(UserFormPesquisa, "            If HasValue(ctl) Then")
     Call InsertLine(UserFormPesquisa, "                If Not IsCorrectType(ctl) Then")
-    Call InsertLine(UserFormPesquisa, "                    strMessage = ControlName(ctl) & " é inválido"")
+    Call InsertLine(UserFormPesquisa, "                    strMessage = ControlName(ctl) & "" é inválido""")
     Call InsertLine(UserFormPesquisa, "                End If")
     Call InsertLine(UserFormPesquisa, "            End If")
     Call InsertLine(UserFormPesquisa, "        End If")
@@ -1212,27 +1208,27 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "    strControlDataType = ControlDataType(ctl)")
     Call InsertLine(UserFormPesquisa, "On Error GoTo HandleError")
     Call InsertLine(UserFormPesquisa, "    Select Case strControlDataType")
-    Call InsertLine(UserFormPesquisa, "    Case "Boolean"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Boolean""")
     Call InsertLine(UserFormPesquisa, "        dummy = CBool(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Byte"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Byte""")
     Call InsertLine(UserFormPesquisa, "        dummy = CByte(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Currency"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Currency""")
     Call InsertLine(UserFormPesquisa, "        dummy = CCur(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Date"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Date""")
     Call InsertLine(UserFormPesquisa, "        dummy = CDate(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Double"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Double""")
     Call InsertLine(UserFormPesquisa, "        dummy = CDbl(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Decimal"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Decimal""")
     Call InsertLine(UserFormPesquisa, "        dummy = CDec(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Integer"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Integer""")
     Call InsertLine(UserFormPesquisa, "        dummy = CInt(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Long"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Long""")
     Call InsertLine(UserFormPesquisa, "        dummy = CLng(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Single"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Single""")
     Call InsertLine(UserFormPesquisa, "        dummy = CSng(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "String"")
+    Call InsertLine(UserFormPesquisa, "    Case ""String""")
     Call InsertLine(UserFormPesquisa, "        dummy = CStr(GetValue(ctl, strControlDataType))")
-    Call InsertLine(UserFormPesquisa, "    Case "Variant"")
+    Call InsertLine(UserFormPesquisa, "    Case ""Variant""")
     Call InsertLine(UserFormPesquisa, "        dummy = CVar(GetValue(ctl, strControlDataType))")
     Call InsertLine(UserFormPesquisa, "    End Select")
     Call InsertLine(UserFormPesquisa, "    IsCorrectType = True")
@@ -1245,14 +1241,17 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Function ControlDataType(ctl As MSForms.Control) As String")
     Call InsertLine(UserFormPesquisa, "    Select Case ctl.name")
-    Call InsertLine(UserFormPesquisa, "    Case "txtId": ControlDataType = "Integer"")
-    Call InsertLine(UserFormPesquisa, "    Case "txtCodigo": ControlDataType = "String"")
-    Call InsertLine(UserFormPesquisa, "    Case "txtNome": ControlDataType = "String"")
-    Call InsertLine(UserFormPesquisa, "    Case "txtAdmissao": ControlDataType = "Date"")
-    Call InsertLine(UserFormPesquisa, "    Case "txtNascimento": ControlDataType = "Date"")
-    Call InsertLine(UserFormPesquisa, "    Case "cbxPDD": ControlDataType = "Boolean"")
-    Call InsertLine(UserFormPesquisa, "    Case "txtTCasa": ControlDataType = "Integer"")
-    Call InsertLine(UserFormPesquisa, "    Case "txtData": ControlDataType = "Date"")
+    
+    For i = 2 To UBound(controles)
+        nomeCampo = controles(i, colunaCampo)
+        tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
+        nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
+        eRequerido = controles(i, colunaRequerido) = "Sim"
+        nomeControle = ObtemNomeControle(nomeCampo, lstColunas.List(i - 1, colunaControle - 1))
+        tipoControle = lstColunas.List(i - 1, colunaControle - 1)
+        
+        Call InsertLine(UserFormPesquisa, "    Case """ & nomeControle & """: ControlDataType = """ & tipoDadoControle & """")
+    Next i
     Call InsertLine(UserFormPesquisa, "    End Select")
     Call InsertLine(UserFormPesquisa, "End Function")
     Call InsertLine(UserFormPesquisa, "")
@@ -1261,7 +1260,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "    If Not ctl Is Nothing Then")
     Call InsertLine(UserFormPesquisa, "        ControlName = ctl.name")
     Call InsertLine(UserFormPesquisa, "        Select Case TypeName(ctl)")
-    Call InsertLine(UserFormPesquisa, "        Case "TextBox", "ListBox", "ComboBox"")
+    Call InsertLine(UserFormPesquisa, "        Case ""TextBox"", ""ListBox"", ""ComboBox""")
     Call InsertLine(UserFormPesquisa, "            If ctl.TabIndex > 0 Then")
     Call InsertLine(UserFormPesquisa, "                Dim c As MSForms.Control")
     Call InsertLine(UserFormPesquisa, "                For Each c In Me.Controls")
@@ -1284,7 +1283,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Function IsRequired(ctl As MSForms.Control) As Boolean")
     Call InsertLine(UserFormPesquisa, "    Select Case ctl.name")
-    Call InsertLine(UserFormPesquisa, "    Case "txtNome"")
+    Call InsertLine(UserFormPesquisa, ReplaceToken("    Case [CONTROLES_REQUERIDOS]"))
     Call InsertLine(UserFormPesquisa, "        IsRequired = True")
     Call InsertLine(UserFormPesquisa, "    Case Else")
     Call InsertLine(UserFormPesquisa, "        IsRequired = False")
@@ -1293,7 +1292,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Function IsInputControl(ctl As MSForms.Control) As Boolean")
     Call InsertLine(UserFormPesquisa, "    Select Case TypeName(ctl)")
-    Call InsertLine(UserFormPesquisa, "    Case "TextBox", "ComboBox", "ListBox", "CheckBox", "OptionButton", "ToggleButton"")
+    Call InsertLine(UserFormPesquisa, "    Case ""TextBox"", ""ComboBox"", ""ListBox"", ""CheckBox"", ""OptionButton"", ""ToggleButton""")
     Call InsertLine(UserFormPesquisa, "        IsInputControl = True")
     Call InsertLine(UserFormPesquisa, "    Case Else")
     Call InsertLine(UserFormPesquisa, "        IsInputControl = False")
@@ -1302,7 +1301,7 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Function HasValue(ctl As MSForms.Control) As Boolean")
     Call InsertLine(UserFormPesquisa, "    Dim var As Variant")
-    Call InsertLine(UserFormPesquisa, "    var = GetValue(ctl, "Variant")")
+    Call InsertLine(UserFormPesquisa, "    var = GetValue(ctl, ""Variant"")")
     Call InsertLine(UserFormPesquisa, "    If IsNull(var) Then")
     Call InsertLine(UserFormPesquisa, "        HasValue = False")
     Call InsertLine(UserFormPesquisa, "    ElseIf Len(var) = 0 Then")
@@ -1316,9 +1315,9 @@ Private Sub CriarForm(ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "On Error GoTo HandleError")
     Call InsertLine(UserFormPesquisa, "    Dim Value As Variant")
     Call InsertLine(UserFormPesquisa, "    Value = ctl.Value")
-    Call InsertLine(UserFormPesquisa, "    If IsNull(Value) And strTypeName <> "Variant" Then")
+    Call InsertLine(UserFormPesquisa, "    If IsNull(Value) And strTypeName <> ""Variant"" Then")
     Call InsertLine(UserFormPesquisa, "        Select Case strTypeName")
-    Call InsertLine(UserFormPesquisa, "        Case "String"")
+    Call InsertLine(UserFormPesquisa, "        Case ""String""")
     Call InsertLine(UserFormPesquisa, "            Value = """)
     Call InsertLine(UserFormPesquisa, "        Case Else")
     Call InsertLine(UserFormPesquisa, "            Value = 0")
