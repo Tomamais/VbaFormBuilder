@@ -86,23 +86,5 @@ Private Sub cboTabelas_Change()
     Next i
     
     lstCampos.List = controles
-    
-    
-'    For i = 1 To UBound(tabelas, 2)
-'        If tabelas(1, i) = cboTabelas.Text Then
-'            lstCampos.AddItem ""
-'            lstCampos.List(0, 0) = "Campo"
-'            lstCampos.List(0, 1) = "Tipo"
-'            lstCampos.List(0, 2) = "Requerido"
-'            lstCampos.List(0, 3) = "É chave"
-'            For j = 1 To UBound(tabelas(2, i), 2)
-'                lstCampos.AddItem ""
-'                lstCampos.List(j, 0) = tabelas(2, i)(1, j)
-'                lstCampos.List(j, 1) = tabelas(2, i)(2, j)
-'                lstCampos.List(j, 2) = tabelas(2, i)(3, j)
-'                lstCampos.List(j, 3) = tabelas(2, i)(4, j)
-'            Next j
-'        End If
-'    Next
 End Sub
 
