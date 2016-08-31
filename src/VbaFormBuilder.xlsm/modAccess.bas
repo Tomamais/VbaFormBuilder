@@ -92,7 +92,7 @@ Public Sub ListTablesAndFields(ByVal caminhoArquivo As String, ByRef tabelas())
             ReDim Preserve campos(1 To 4, 1 To dBase.TableDefs(lTbl).Fields.Count)
             For lFld = 1 To dBase.TableDefs(lTbl).Fields.Count
                 lRow = lRow + 1
-                campos(1, lRow) = dBase.TableDefs(lTbl).Fields(lFld - 1).name
+                campos(1, lRow) = RemoveAcentos(dBase.TableDefs(lTbl).Fields(lFld - 1).name)
                 campos(2, lRow) = FieldTypeName(dBase.TableDefs(lTbl).Fields(lFld - 1))
                 campos(3, lRow) = IIf(dBase.TableDefs(lTbl).Fields(lFld - 1).Required, "Sim", "Não")
                 campos(4, lRow) = IIf(dBase.TableDefs(lTbl).Fields(lFld - 1).name = primaryKey, "Sim", "Não")

@@ -90,5 +90,5 @@ Private Sub cboTabelas_Change()
 End Sub
 
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
-    
+    Call CloseConnection
 End Sub
