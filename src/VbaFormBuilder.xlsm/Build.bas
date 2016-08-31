@@ -238,12 +238,12 @@ Private Sub checkHowToImport(file As Object, includeClassFiles As Boolean)
                     ' In that case they'll have to be imported manually.
                     If includeClassFiles Then
                         'importComponent vbaProject, file
-                        componentsToImport.Add componentName, file.Path
+                        componentsToImport.Add componentName, file.path
                     End If
                 End If
             Case ".bas", ".frm"
                 'importComponent vbaProject, file
-                componentsToImport.Add componentName, file.Path
+                componentsToImport.Add componentName, file.path
             Case Else
                 'do nothing
                 Debug.Print "Skipping file " & fileName
@@ -314,7 +314,7 @@ Private Sub importLines(vbaProject As VBProject, file As Object)
     ' At this point compilation errors may cause a crash, so we ignore those.
     On Error Resume Next
     c.CodeModule.DeleteLines 1, c.CodeModule.countOfLines
-    c.CodeModule.AddFromFile file.Path
+    c.CodeModule.AddFromFile file.path
     On Error GoTo 0
 End Sub
 

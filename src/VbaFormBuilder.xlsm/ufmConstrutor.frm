@@ -1100,33 +1100,32 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
             Call InsertLine(UserFormPesquisa, "    End If")
             Call InsertLine(UserFormPesquisa, "")
         Else
-            Select Case tipoDadoControle
-                Case "String"
-                    Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
-                    Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
-                    Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " LIKE '*"" & Trim(" & nomeControle & ".Text) & ""*'""")
-                    Call InsertLine(UserFormPesquisa, "    End If")
-                    Call InsertLine(UserFormPesquisa, "")
-                Case "Date"
-                    Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
-                    Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
-                    Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " = #"" & Trim(CDate(" & nomeControle & ".Text)) & ""#""")
-                    Call InsertLine(UserFormPesquisa, "    End If")
-                    Call InsertLine(UserFormPesquisa, "")
-                Case "Boolean"
-                    Call InsertLine(UserFormPesquisa, "    If " & nomeControle & "Filtrar.Value Then")
-                    Call InsertLine(UserFormPesquisa, "        If " & nomeControle & ".Value <> """" Then")
-                    Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
-                    Call InsertLine(UserFormPesquisa, "            filtros = filtros & """ & nomeCampo & " = "" & IIf(" & nomeControle & ".Value, ""True"", ""False"")")
-                    Call InsertLine(UserFormPesquisa, "        End If")
-                    Call InsertLine(UserFormPesquisa, "    End If")
-                Case Else
-                    Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
-                    Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
-                    Call InsertLine(UserFormPesquisa, "        filtros = """ & nomeCampo & " = "" & Trim(" & nomeControle & ".Text)")
-                    Call InsertLine(UserFormPesquisa, "    End If")
-                    Call InsertLine(UserFormPesquisa, "")
-            End Select
+            If tipoDadoControle = "String" Then
+                Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
+                Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
+                Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " LIKE '*"" & Trim(" & nomeControle & ".Text) & ""*'""")
+                Call InsertLine(UserFormPesquisa, "    End If")
+                Call InsertLine(UserFormPesquisa, "")
+            ElseIf tipoDadoControle = "Date" Then
+                Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
+                Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
+                Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " = #"" & Trim(CDate(" & nomeControle & ".Text)) & ""#""")
+                Call InsertLine(UserFormPesquisa, "    End If")
+                Call InsertLine(UserFormPesquisa, "")
+            ElseIf tipoDadoControle = "Boolean" Then
+                If tipoControle = "CheckBox" Then Call InsertLine(UserFormPesquisa, "    If " & nomeControle & "Filtrar.Value Then")
+                Call InsertLine(UserFormPesquisa, "        If " & nomeControle & ".Value <> """" Then")
+                Call InsertLine(UserFormPesquisa, "            If filtros <> """" Then filtros = filtros & "" AND """)
+                Call InsertLine(UserFormPesquisa, "            filtros = filtros & """ & nomeCampo & " = "" & IIf(" & nomeControle & ".Value, ""True"", ""False"")")
+                Call InsertLine(UserFormPesquisa, "        End If")
+                If tipoControle = "CheckBox" Then Call InsertLine(UserFormPesquisa, "    End If")
+            Else
+                Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
+                Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
+                Call InsertLine(UserFormPesquisa, "        filtros = """ & nomeCampo & " = "" & Trim(" & nomeControle & ".Text)")
+                Call InsertLine(UserFormPesquisa, "    End If")
+                Call InsertLine(UserFormPesquisa, "")
+            End If
         End If
     Next i
     

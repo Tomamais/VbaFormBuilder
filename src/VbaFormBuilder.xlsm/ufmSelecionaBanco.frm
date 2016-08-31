@@ -52,6 +52,7 @@ Private Sub btnSelecionarArquivo_Click()
     End If
     
     If recarrega And caminhoArquivo <> "" Then
+        Erase tabelas
         Call ListTablesAndFields(caminhoArquivo, tabelas)
         Dim i As Integer
         For i = 1 To UBound(tabelas, 2)
@@ -88,3 +89,6 @@ Private Sub cboTabelas_Change()
     lstCampos.List = controles
 End Sub
 
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    
+End Sub

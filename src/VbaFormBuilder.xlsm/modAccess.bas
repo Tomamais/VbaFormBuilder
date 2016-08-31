@@ -2,8 +2,13 @@ Attribute VB_Name = "modAccess"
 Option Explicit
 
 Private mdbCurrentDb As Database
+Private path As String
 
 Public Function CurrentDb(ByVal caminhoArquivo As String) As Database
+    path = caminhoArquivo
+    
+    If path <> caminhoArquivo Then Set mdbCurrentDb = Nothing
+    
     If mdbCurrentDb Is Nothing Then
         If caminhoArquivo = "" Then
             caminhoArquivo = OpenFileDialog
@@ -14,6 +19,13 @@ Public Function CurrentDb(ByVal caminhoArquivo As String) As Database
 
     Set CurrentDb = mdbCurrentDb
 End Function
+
+Public Sub CloseConnection()
+    If Not mdbCurrentDb Is Nothing Then
+        Call mdbCurrentDb.Close
+        Set mdbCurrentDb = Nothing
+    End If
+End Sub
 
 Public Function OpenFileDialog() As String
     Dim Filter As String, Title As String
@@ -71,13 +83,13 @@ Public Sub ListTablesAndFields(ByVal caminhoArquivo As String, ByRef tabelas())
             Dim primaryKey As String
             primaryKey = dBase.TableDefs(lTbl).Indexes("PrimaryKey").Fields(0).name
             totalTabelas = totalTabelas + 1
-            ReDim tabelas(1 To 2, 1 To totalTabelas)
+            ReDim Preserve tabelas(1 To 2, 1 To totalTabelas)
             tabelas(1, totalTabelas) = dBase.TableDefs(lTbl).name
              'Otherwise, loop through each table, writing the table and field names
              'to the Excel file
             Dim fieldCount As Long
             Dim campos()
-            ReDim campos(1 To 4, 1 To dBase.TableDefs(lTbl).Fields.Count)
+            ReDim Preserve campos(1 To 4, 1 To dBase.TableDefs(lTbl).Fields.Count)
             For lFld = 1 To dBase.TableDefs(lTbl).Fields.Count
                 lRow = lRow + 1
                 campos(1, lRow) = dBase.TableDefs(lTbl).Fields(lFld - 1).name
