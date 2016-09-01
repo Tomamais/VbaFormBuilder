@@ -20,6 +20,8 @@ Private Const colunaCampo As Integer = 1
 Private Const colunaTipo As Integer = 2
 Private Const colunaRequerido As Integer = 3
 Private Const colunaEchave As Integer = 4
+Private Const colunaRotulo As Integer = 5
+
 Private Sub btnConfigurarCampos_Click()
     If lstCampos.ListCount > 0 Then
         ufmConstrutor.lstColunas.ColumnCount = lstCampos.ColumnCount
@@ -39,6 +41,7 @@ Private Sub btnConfigurarCampos_Click()
 End Sub
 
 Private Sub btnSelecionarArquivo_Click()
+    Dim i As Integer
     Dim recarrega As Boolean
     If caminhoArquivo = "" Then
         caminhoArquivo = OpenFileDialog
@@ -47,6 +50,7 @@ Private Sub btnSelecionarArquivo_Click()
         Dim tempCaminho As String
         tempCaminho = OpenFileDialog
         If tempCaminho <> caminhoArquivo Then
+            caminhoArquivo = tempCaminho
             recarrega = True
         End If
     End If
@@ -54,7 +58,7 @@ Private Sub btnSelecionarArquivo_Click()
     If recarrega And caminhoArquivo <> "" Then
         Erase tabelas
         Call ListTablesAndFields(caminhoArquivo, tabelas)
-        Dim i As Integer
+        cboTabelas.Clear
         For i = 1 To UBound(tabelas, 2)
             cboTabelas.AddItem tabelas(1, i)
         Next i
@@ -65,23 +69,26 @@ End Sub
 
 Private Sub cboTabelas_Change()
     Dim i As Integer, j As Integer
-    lstCampos.ColumnCount = 4
+    lstCampos.ColumnCount = 5
     lstCampos.Clear
     
     For i = 1 To UBound(tabelas, 2)
         If tabelas(1, i) = cboTabelas.text Then
-            ReDim controles(1 To UBound(tabelas(2, i), 2) + 1, 1 To 4)
+            Erase controles
+            ReDim controles(1 To UBound(tabelas(2, i), 2) + 1, 1 To 5)
                         
             controles(1, colunaCampo) = "Campo"
             controles(1, colunaTipo) = "Tipo"
             controles(1, colunaRequerido) = "Requerido"
             controles(1, colunaEchave) = "É chave?"
+            controles(1, colunaRotulo) = "Rótulo"
             
             For j = 1 To UBound(tabelas(2, i), 2)
                 controles(j + 1, colunaCampo) = tabelas(2, i)(colunaCampo, j)
                 controles(j + 1, colunaTipo) = tabelas(2, i)(colunaTipo, j)
                 controles(j + 1, colunaRequerido) = tabelas(2, i)(colunaRequerido, j)
                 controles(j + 1, colunaEchave) = tabelas(2, i)(colunaEchave, j)
+                controles(j + 1, colunaRotulo) = tabelas(2, i)(colunaRotulo, j)
             Next j
         End If
     Next i

@@ -5,8 +5,6 @@ Private mdbCurrentDb As Database
 Private path As String
 
 Public Function CurrentDb(ByVal caminhoArquivo As String) As Database
-    path = caminhoArquivo
-    
     If path <> caminhoArquivo Then Set mdbCurrentDb = Nothing
     
     If mdbCurrentDb Is Nothing Then
@@ -17,6 +15,7 @@ Public Function CurrentDb(ByVal caminhoArquivo As String) As Database
         End If
     End If
 
+    path = caminhoArquivo
     Set CurrentDb = mdbCurrentDb
 End Function
 
@@ -63,7 +62,7 @@ Public Sub ListTablesAndFields(ByVal caminhoArquivo As String, ByRef tabelas())
     Dim lTbl As Long
     Dim lFld As Long
     Dim dBase As Database
-    Dim lRow As Long
+    Dim campos()
      
      'Set current database to a variable adn create a new Excel instance
     Set dBase = CurrentDb(caminhoArquivo)
@@ -88,14 +87,14 @@ Public Sub ListTablesAndFields(ByVal caminhoArquivo As String, ByRef tabelas())
              'Otherwise, loop through each table, writing the table and field names
              'to the Excel file
             Dim fieldCount As Long
-            Dim campos()
-            ReDim Preserve campos(1 To 4, 1 To dBase.TableDefs(lTbl).Fields.Count)
+            Erase campos
+            ReDim campos(1 To 5, 1 To dBase.TableDefs(lTbl).Fields.Count)
             For lFld = 1 To dBase.TableDefs(lTbl).Fields.Count
-                lRow = lRow + 1
-                campos(1, lRow) = RemoveAcentos(dBase.TableDefs(lTbl).Fields(lFld - 1).name)
-                campos(2, lRow) = FieldTypeName(dBase.TableDefs(lTbl).Fields(lFld - 1))
-                campos(3, lRow) = IIf(dBase.TableDefs(lTbl).Fields(lFld - 1).Required, "Sim", "Não")
-                campos(4, lRow) = IIf(dBase.TableDefs(lTbl).Fields(lFld - 1).name = primaryKey, "Sim", "Não")
+                campos(1, lFld) = RemoveAcentos(dBase.TableDefs(lTbl).Fields(lFld - 1).name)
+                campos(2, lFld) = FieldTypeName(dBase.TableDefs(lTbl).Fields(lFld - 1))
+                campos(3, lFld) = IIf(dBase.TableDefs(lTbl).Fields(lFld - 1).Required, "Sim", "Não")
+                campos(4, lFld) = IIf(dBase.TableDefs(lTbl).Fields(lFld - 1).name = primaryKey, "Sim", "Não")
+                campos(5, lFld) = dBase.TableDefs(lTbl).Fields(lFld - 1).name
             Next lFld
             tabelas(2, totalTabelas) = campos
         End If

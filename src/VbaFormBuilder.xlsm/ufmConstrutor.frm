@@ -25,6 +25,7 @@ Private Const colunaCampo As Integer = 1
 Private Const colunaControle As Integer = 2
 Private Const colunaRequerido As Integer = 3
 Private Const colunaEchave As Integer = 4
+Private Const colunaRotulo As Integer = 5
 
 Public Sub DefineControles(ByRef pControles())
      controles = pControles
@@ -363,11 +364,13 @@ Private Sub UserForm_Initialize()
 End Sub
 
 Private Sub cmdGerarFormulario_Click()
-    If Trim(txtNomeFormulario.text) <> "" Then
+    Dim nomeForm As String
+    nomeForm = txtNomeFormulario.text
+    If Trim(nomeForm) <> "" Then
         If IsVarArrayEmpty(controles) Then
             MsgBox "E onde estão os campos?"
         Else
-            Call CriarForm(Trim(txtNomeFormulario.text))
+            Call CriarForm(Trim(nomeForm))
         End If
     Else
         MsgBox "O nome do formulário é requerido"
@@ -379,8 +382,10 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Dim newBook As Workbook
     Set newBook = Application.Workbooks.Add
     Dim MyUserForm As VBComponent
-    Dim NomeForm As String
-    NomeForm = NomeEntidade
+    Dim nomeForm As String, nomeEntidadeComAcentos
+    nomeForm = RemoveAcentos(NomeEntidade)
+    nomeEntidadeComAcentos = NomeEntidade
+    NomeEntidade = RemoveAcentos(NomeEntidade)
     
     'botões
     Dim btnOk As MSForms.CommandButton
@@ -401,6 +406,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Dim tipoDadoControle As String
     Dim tipoControle As String
     Dim nomeCampo As String
+    Dim nomeRotulo As String
     Dim linhaAInserir As String
     Dim linhaNomeControle As Long
     Dim nomeCampoPrivado As String
@@ -418,20 +424,20 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     'gera a classe
     Dim modEntidade As VBComponent
     Set modEntidade = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
-    modEntidade.name = "mod" & NomeForm
+    modEntidade.name = "mod" & nomeForm
     
-    Call InsertLine(modEntidade, "Sub AbreForm" & NomeForm & "()")
-    Call InsertLine(modEntidade, "    'variável do tipo da Classe " & NomeForm)
-    Call InsertLine(modEntidade, "    Dim udt" & NomeForm & " As " & NomeForm)
+    Call InsertLine(modEntidade, "Sub AbreForm" & nomeForm & "()")
+    Call InsertLine(modEntidade, "    'variável do tipo da Classe " & nomeForm)
+    Call InsertLine(modEntidade, "    Dim udt" & nomeForm & " As " & nomeForm)
     Call InsertLine(modEntidade, "    'Cria a isntância")
-    Call InsertLine(modEntidade, "    Set udt" & NomeForm & " = New " & NomeForm)
+    Call InsertLine(modEntidade, "    Set udt" & nomeForm & " = New " & nomeForm)
     Call InsertLine(modEntidade, "    ")
-    Call InsertLine(modEntidade, "    udt" & NomeForm & ".MoveLast")
-    Call InsertLine(modEntidade, "    udt" & NomeForm & ".MoveFirst")
-    Call InsertLine(modEntidade, "    'Atribui uma instância da classe " & NomeForm & " ao form")
-    Call InsertLine(modEntidade, "    ufm" & NomeForm & ".SetValues udt" & NomeForm)
+    Call InsertLine(modEntidade, "    udt" & nomeForm & ".MoveLast")
+    Call InsertLine(modEntidade, "    udt" & nomeForm & ".MoveFirst")
+    Call InsertLine(modEntidade, "    'Atribui uma instância da classe " & nomeForm & " ao form")
+    Call InsertLine(modEntidade, "    ufm" & nomeForm & ".SetValues udt" & nomeForm)
     Call InsertLine(modEntidade, "    'Mostra o form")
-    Call InsertLine(modEntidade, "    ufm" & NomeForm & ".Show")
+    Call InsertLine(modEntidade, "    ufm" & nomeForm & ".Show")
     Call InsertLine(modEntidade, "End Sub")
     
     countOfLines = 0
@@ -465,7 +471,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     'gera a classe
     Dim classe As VBComponent
     Set classe = newBook.VBProject.VBComponents.Add(vbext_ct_ClassModule)
-    classe.name = NomeForm
+    classe.name = nomeForm
     
     Call InsertLine(classe, "Private mrstRecordset As Recordset")
     Call InsertLine(classe, "Private mbooLoaded As Boolean")
@@ -513,12 +519,13 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(classe, "    With Recordset")
     For i = 2 To UBound(controles)
         nomeCampo = controles(i, colunaCampo)
+        nomeRotulo = controles(i, colunaRotulo)
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
         nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
         If nomeCampo = ChavePrimaria Then
-            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields(""" & nomeCampo & """).Value)")
+            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields(""[" & nomeRotulo & "]"").Value)")
         Else
-            Call InsertLine(classe, "        Me." & nomeCampo & " = Nz(.Fields(""" & nomeCampo & """).Value)")
+            Call InsertLine(classe, "        Me." & nomeCampo & " = Nz(.Fields(""[" & nomeRotulo & "]"").Value)")
         End If
     Next i
     Call InsertLine(classe, "    End With")
@@ -538,16 +545,17 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(classe, "        End If")
     For i = 2 To UBound(controles)
         nomeCampo = controles(i, colunaCampo)
+        nomeRotulo = controles(i, colunaRotulo)
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
         nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
         eRequerido = controles(i, colunaRequerido) = "Sim"
         If nomeCampo = ChavePrimaria Then
-            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields(""" & nomeCampo & """).Value)")
+            Call InsertLine(classe, "        " & nomeCampoPrivado & " = Nz(.Fields(""[" & nomeRotulo & "]"").Value)")
         Else
             If eRequerido Then
-                Call InsertLine(classe, "        .Fields(""" & nomeCampo & """).Value = NullIfEmptyString(Me." & nomeCampo & ")")
+                Call InsertLine(classe, "        .Fields(""[" & nomeRotulo & "]"").Value = NullIfEmptyString(Me." & nomeCampo & ")")
             Else
-                Call InsertLine(classe, "        .Fields(""" & nomeCampo & """).Value = Me." & nomeCampo)
+                Call InsertLine(classe, "        .Fields(""[" & nomeRotulo & "]"").Value = Me." & nomeCampo)
             End If
         End If
     Next i
@@ -605,7 +613,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(classe, "")
     Call InsertLine(classe, "'Ocorre quando a classe é instanciada")
     Call InsertLine(classe, "Private Sub Class_Initialize()")
-    Call InsertLine(classe, "    Set Recordset = CurrentDb.OpenRecordset(""" & NomeForm & """, dbOpenDynaset)")
+    Call InsertLine(classe, "    Set Recordset = CurrentDb.OpenRecordset(""[" & nomeEntidadeComAcentos & "]"", dbOpenDynaset)")
     Call InsertLine(classe, "End Sub")
     Call InsertLine(classe, "")
     Call InsertLine(classe, "'Ocorre quando a classe é tirada da memória (Set = Nothing)")
@@ -668,11 +676,11 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(classe, "    Recordset.Filter = rFilter")
     Call InsertLine(classe, "End Property")
 
-    NomeForm = "ufm" & NomeForm
+    nomeForm = "ufm" & nomeForm
      
     'verifica se o formulário exite
     For N = 1 To newBook.VBProject.VBComponents.Count
-        If newBook.VBProject.VBComponents(N).name = NomeForm Then
+        If newBook.VBProject.VBComponents(N).name = nomeForm Then
             MsgBox "Já existe um formulário com o mesmo nome"
             Exit Sub
         End If
@@ -684,8 +692,8 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
         .Properties("Height") = lstColunas.ListCount * 45
         .Properties("Width") = 333
         On Error Resume Next
-        .name = NomeForm
-        .Properties("Caption") = "Formulário - " & NomeForm
+        .name = nomeForm
+        .Properties("Caption") = "Formulário - " & nomeForm
     End With
     
     'cria os controles referentes aos campos
@@ -928,7 +936,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     'Formulário de Pesquisa
     Dim NomeFormPesquisa As String
     Dim UserFormPesquisa As VBComponent
-    NomeFormPesquisa = NomeForm & "Pesquisa"
+    NomeFormPesquisa = nomeForm & "Pesquisa"
      
     'verifica se o formulário exite
     For N = 1 To newBook.VBProject.VBComponents.Count
@@ -960,6 +968,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     
     For i = 2 To UBound(controles)
         nomeCampo = controles(i, colunaCampo)
+        nomeRotulo = controles(i, colunaRotulo)
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
         nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
         eRequerido = controles(i, colunaRequerido) = "Sim"
@@ -970,7 +979,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
             'Checkbox de filtro
             Set CheckBox = UserFormPesquisa.Designer.Controls.Add("Forms.CheckBox.1")
             With CheckBox
-                .Caption = controles(i, colunaCampo)
+                .Caption = nomeRotulo
                 .name = nomeControle
                 .Left = margemEsquerda
                 .Top = margemTopo
@@ -980,7 +989,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
             'Checkbox de controle de filtro
             Set CheckBoxFiltro = UserFormPesquisa.Designer.Controls.Add("Forms.CheckBox.1")
             With CheckBoxFiltro
-                .Caption = "Filtra " & controles(i, colunaCampo)
+                .Caption = "Filtra " & nomeRotulo
                 .name = nomeControle & "Filtrar"
                 .Left = margemEsquerda + (larguraControle / 2) + 5
                 .Top = margemTopo
@@ -991,7 +1000,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
             'Rótulo
             Set Label = UserFormPesquisa.Designer.Controls.Add("Forms.Label.1")
             With Label
-                .Caption = controles(i, colunaCampo)
+                .Caption = nomeRotulo
                 .name = "lbl" & controles(i, colunaCampo)
                 .Left = margemEsquerda
                 .Top = margemTopo
@@ -1055,12 +1064,12 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub lst" & NomeEntidade & "_DblClick(ByVal Cancel As MSForms.ReturnBoolean)")
     Call InsertLine(UserFormPesquisa, "    If lst" & NomeEntidade & ".ListIndex > 0 Then")
-    Call InsertLine(UserFormPesquisa, "        Dim Id As Long")
+    Call InsertLine(UserFormPesquisa, "        Dim " & ChavePrimaria & " As Long")
     Call InsertLine(UserFormPesquisa, "        " & ChavePrimaria & " = CLng(lst" & NomeEntidade & ".List(lst" & NomeEntidade & ".ListIndex, 0))")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "        cls" & NomeEntidade & ".MoveFirst")
     Call InsertLine(UserFormPesquisa, "        Do")
-    Call InsertLine(UserFormPesquisa, "            If cls" & NomeEntidade & ".Id = Id Then")
+    Call InsertLine(UserFormPesquisa, "            If cls" & NomeEntidade & "." & ChavePrimaria & " = " & ChavePrimaria & " Then")
     Call InsertLine(UserFormPesquisa, "                ufm" & NomeEntidade & ".SetValues cls" & NomeEntidade & "")
     Call InsertLine(UserFormPesquisa, "                Unload Me")
     Call InsertLine(UserFormPesquisa, "                Exit Do")
@@ -1088,6 +1097,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     
     For i = 2 To UBound(controles)
         nomeCampo = controles(i, colunaCampo)
+        nomeRotulo = controles(i, colunaRotulo)
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
         nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
         eRequerido = controles(i, colunaRequerido) = "Sim"
@@ -1096,33 +1106,33 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
         
         If nomeCampo = ChavePrimaria Then
             Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
-            Call InsertLine(UserFormPesquisa, "        filtros = """ & nomeCampo & " = "" & Trim(" & nomeControle & ".Text)")
+            Call InsertLine(UserFormPesquisa, "        filtros = ""[" & nomeRotulo & "] = "" & Trim(" & nomeControle & ".Text)")
             Call InsertLine(UserFormPesquisa, "    End If")
             Call InsertLine(UserFormPesquisa, "")
         Else
             If tipoDadoControle = "String" Then
                 Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
                 Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
-                Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " LIKE '*"" & Trim(" & nomeControle & ".Text) & ""*'""")
+                Call InsertLine(UserFormPesquisa, "        filtros = filtros & ""[" & nomeRotulo & "] LIKE '*"" & Trim(" & nomeControle & ".Text) & ""*'""")
                 Call InsertLine(UserFormPesquisa, "    End If")
                 Call InsertLine(UserFormPesquisa, "")
             ElseIf tipoDadoControle = "Date" Then
                 Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
                 Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
-                Call InsertLine(UserFormPesquisa, "        filtros = filtros & """ & nomeCampo & " = #"" & Trim(CDate(" & nomeControle & ".Text)) & ""#""")
+                Call InsertLine(UserFormPesquisa, "        filtros = filtros & ""[" & nomeRotulo & "] = #"" & Trim(CDate(" & nomeControle & ".Text)) & ""#""")
                 Call InsertLine(UserFormPesquisa, "    End If")
                 Call InsertLine(UserFormPesquisa, "")
             ElseIf tipoDadoControle = "Boolean" Then
                 If tipoControle = "CheckBox" Then Call InsertLine(UserFormPesquisa, "    If " & nomeControle & "Filtrar.Value Then")
                 Call InsertLine(UserFormPesquisa, "        If " & nomeControle & ".Value <> """" Then")
                 Call InsertLine(UserFormPesquisa, "            If filtros <> """" Then filtros = filtros & "" AND """)
-                Call InsertLine(UserFormPesquisa, "            filtros = filtros & """ & nomeCampo & " = "" & IIf(" & nomeControle & ".Value, ""True"", ""False"")")
+                Call InsertLine(UserFormPesquisa, "            filtros = filtros & ""[" & nomeRotulo & "] = "" & IIf(" & nomeControle & ".Value, ""True"", ""False"")")
                 Call InsertLine(UserFormPesquisa, "        End If")
                 If tipoControle = "CheckBox" Then Call InsertLine(UserFormPesquisa, "    End If")
             Else
                 Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
                 Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
-                Call InsertLine(UserFormPesquisa, "        filtros = """ & nomeCampo & " = "" & Trim(" & nomeControle & ".Text)")
+                Call InsertLine(UserFormPesquisa, "        filtros = filtros & ""[" & nomeRotulo & "] = "" & Trim(" & nomeControle & ".Text)")
                 Call InsertLine(UserFormPesquisa, "    End If")
                 Call InsertLine(UserFormPesquisa, "")
             End If
@@ -1148,7 +1158,8 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(UserFormPesquisa, "    Do While Not rstFiltro.EOF")
     For i = 2 To UBound(controles)
         nomeCampo = controles(i, colunaCampo)
-        Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = rstFiltro!" & nomeCampo)
+        nomeRotulo = controles(i, colunaRotulo)
+        Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = rstFiltro(""[" & nomeRotulo & "]"")")
     Next i
     
     Call InsertLine(UserFormPesquisa, "        linha = linha + 1")
@@ -1360,7 +1371,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     
     Debug.Print "CountOfLines :" & countOfLines
     
-    MsgBox NomeForm & " gerado com sucesso"
+    MsgBox nomeForm & " gerado com sucesso"
     Unload Me
     Unload ufmSelecionaBanco
 End Sub
@@ -1374,7 +1385,7 @@ End Sub
 Private Function ReplaceToken(ByVal text As String)
     Dim i As Integer
     '[NOME_FORM]
-    text = Replace(text, "[NOME_FORM]", Trim(txtNomeFormulario.text))
+    text = Replace(text, "[NOME_FORM]", Trim(RemoveAcentos(txtNomeFormulario.text)))
     '[CHAVE_PRIMARIA]
     text = Replace(text, "[CHAVE_PRIMARIA]", ChavePrimaria)
     '[CONTROLES_REQUERIDOS]
@@ -1385,15 +1396,17 @@ Private Function ReplaceToken(ByVal text As String)
         i = i + 1
     Loop While i <= UBound(controles)
         
-    ReDim controlesRequeridos(1 To controlesRequeridosCount)
-    controlesRequeridosIndex = 1
-    For i = 2 To UBound(controles)
-        If controles(i, colunaRequerido) = "Sim" Then
-            controlesRequeridos(controlesRequeridosIndex) = """" & ObtemNomeControle(controles(i, colunaCampo), lstColunas.List(i - 1, colunaControle - 1)) & """"
-            controlesRequeridosIndex = controlesRequeridosIndex + 1
-        End If
-    Next i
-    text = Replace(text, "[CONTROLES_REQUERIDOS]", Join(controlesRequeridos, ","))
+    If controlesRequeridosCount > 0 Then
+        ReDim controlesRequeridos(1 To controlesRequeridosCount)
+        controlesRequeridosIndex = 1
+        For i = 2 To UBound(controles)
+            If controles(i, colunaRequerido) = "Sim" Then
+                controlesRequeridos(controlesRequeridosIndex) = """" & ObtemNomeControle(controles(i, colunaCampo), lstColunas.List(i - 1, colunaControle - 1)) & """"
+                controlesRequeridosIndex = controlesRequeridosIndex + 1
+            End If
+        Next i
+        text = Replace(text, "[CONTROLES_REQUERIDOS]", Join(controlesRequeridos, ","))
+    End If
     
     ReplaceToken = text
 End Function
