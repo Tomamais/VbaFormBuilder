@@ -23,11 +23,24 @@ Private Const colunaEchave As Integer = 4
 Private Const colunaRotulo As Integer = 5
 
 Private Sub btnConfigurarCampos_Click()
+    Dim i As Integer, temChave As Boolean
+    'só segue em frente se tiver pelo menos um campo de chave primária
+    For i = 2 To UBound(controles)
+        If controles(i, colunaEchave) = "Sim" Then
+            temChave = True
+            Exit For
+        End If
+    Next i
+    
+    If Not temChave Then
+        MsgBox "A tabela precisa ter pelo menos uma chave primária"
+        Exit Sub
+    End If
+
     If lstCampos.ListCount > 0 Then
         ufmConstrutor.lstColunas.ColumnCount = lstCampos.ColumnCount
         ufmConstrutor.lstColunas.List = lstCampos.List
         'substitui a coluna tipo por controle
-        Dim i As Integer
         ufmConstrutor.lstColunas.List(1, 1) = "Controle"
         For i = 1 To ufmConstrutor.lstColunas.ListCount - 1
             ufmConstrutor.lstColunas.List(i, 1) = "TextBox"

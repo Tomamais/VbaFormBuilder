@@ -80,7 +80,8 @@ Public Sub ListTablesAndFields(ByVal caminhoArquivo As String, ByRef tabelas())
              'MSYS indicates a system level table
         Else
             Dim primaryKey As String
-            primaryKey = dBase.TableDefs(lTbl).Indexes("PrimaryKey").Fields(0).name
+            'primaryKey = dBase.TableDefs(lTbl).Indexes("PrimaryKey").Fields(0).name
+            primaryKey = GetPrimaryKey(dBase.TableDefs(lTbl))
             totalTabelas = totalTabelas + 1
             ReDim Preserve tabelas(1 To 2, 1 To totalTabelas)
             tabelas(1, totalTabelas) = dBase.TableDefs(lTbl).name
@@ -105,6 +106,17 @@ Public Sub ListTablesAndFields(ByVal caminhoArquivo As String, ByRef tabelas())
      'Release database object from memory
     Set dBase = Nothing
 End Sub
+
+Function GetPrimaryKey(ByRef tbl As TableDef) As String
+    Dim ind As Index
+    For Each ind In tbl.Indexes
+        If ind.Primary Or ind.name = "PrimaryKey" Then
+            GetPrimaryKey = ind.Fields(0).name
+            Exit Function
+        End If
+    Next ind
+    GetPrimaryKey = ""
+End Function
 
 Function FieldTypeName(fld As DAO.Field) As String
     'Purpose: Converts the numeric results of DAO Field.Type to text.
