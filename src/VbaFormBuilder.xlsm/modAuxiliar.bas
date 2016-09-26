@@ -29,10 +29,10 @@ Public Function RemoveAcentos(ByVal caract As String) As String
     'Acentos e caracteres especiais que serão buscados na string
     'Você pode definir outros caracteres nessa variável, mas
     ' precisará também colocar a letra correspondente em codiB
-    codiA = "àáâãäèéêëìíîïòóôõöùúûüÀÁÂÃÄÈÉÊËÌÍÎÒÓÔÕÖÙÚÛÜçÇñÑ/ "
+    codiA = "àáâãäèéêëìíîïòóôõöùúûüÀÁÂÃÄÈÉÊËÌÍÎÒÓÔÕÖÙÚÛÜçÇñÑ/ -$()"
      
     'Letras correspondentes para substituição
-    codiB = "aaaaaeeeeiiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcCnN__"
+    codiB = "aaaaaeeeeiiiiooooouuuuAAAAAEEEEIIIOOOOOUUUUcCnN___S__"
      
     'Armazena em temp a string recebida
     temp = caract
