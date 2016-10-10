@@ -1406,6 +1406,8 @@ Private Function ReplaceToken(ByVal text As String)
             End If
         Next i
         text = Replace(text, "[CONTROLES_REQUERIDOS]", Join(controlesRequeridos, ","))
+    Else
+        text = Replace(text, "[CONTROLES_REQUERIDOS]", """")
     End If
     
     ReplaceToken = text
