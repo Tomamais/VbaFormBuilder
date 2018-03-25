@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmConstrutor
    ClientHeight    =   4212
    ClientLeft      =   108
    ClientTop       =   456
-   ClientWidth     =   7416
+   ClientWidth     =   7920
    OleObjectBlob   =   "ufmConstrutor.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -26,6 +26,7 @@ Private Const colunaControle As Integer = 2
 Private Const colunaRequerido As Integer = 3
 Private Const colunaEchave As Integer = 4
 Private Const colunaRotulo As Integer = 5
+Private Const colunaGerar As Integer = 6
 
 Public Sub DefineControles(ByRef pControles())
      controles = pControles
@@ -333,6 +334,13 @@ Private Sub cboControle_Change()
     End If
 End Sub
 
+Private Sub cbxGerar_Click()
+    If lstColunas.ListIndex > 0 Then
+        Linha = lstColunas.ListIndex
+        lstColunas.List(Linha, 5) = IIf(cbxGerar.Value, "Sim", "Não")
+    End If
+End Sub
+
 Private Sub cbxRequerido_Click()
     If lstColunas.ListIndex > 0 Then
         Linha = lstColunas.ListIndex
@@ -352,6 +360,7 @@ Private Sub lstColunas_Click()
         eChave = (lstColunas.List(Linha, 3) = "Sim")
         cboControle.Enabled = Not eChave
         cbxRequerido.Enabled = Not eChave
+        cbxGerar.Value = (lstColunas.List(Linha, 5) = "Sim")
     End If
 End Sub
 
@@ -442,6 +451,31 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     
     countOfLines = 0
     
+    Dim qtdCamposAGerar As Integer
+    For i = LBound(controles) To UBound(controles)
+        If lstColunas.List(i - 1, colunaGerar - 1) = "Sim" Then qtdCamposAGerar = qtdCamposAGerar + 1
+    Next i
+    
+    'remove os campos que não serão gerados do array
+    Dim controlesAGerar()
+    
+    ReDim controlesAGerar(LBound(controles) To qtdCamposAGerar + 1, LBound(controles, 2) To UBound(controles, 2))
+    'copia as colunas
+    For i = LBound(controles, 2) To UBound(controles, 2)
+        controlesAGerar(1, i) = controles(1, i)
+    Next i
+    
+    'copia o resto
+    For i = LBound(controles) To UBound(controles)
+        If lstColunas.List(i - 1, colunaGerar - 1) = "Sim" Then
+            For j = LBound(controles, 2) To UBound(controles, 2)
+                controlesAGerar(i, j) = controles(i, j)
+            Next j
+        End If
+    Next i
+    
+    controles = controlesAGerar
+    
     'gera a classe
     Dim modAuxiliar As VBComponent
     Set modAuxiliar = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
@@ -460,7 +494,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     
     Call InsertLine(modTypes, "Public Type Atendimento")
     For i = 2 To UBound(controles)
-        nomeCampo = controles(i, colunaCampo)
+        nomeCampo = RemoveAcentos(CStr(controles(i, colunaCampo)))
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
         Call InsertLine(modTypes, "    " & nomeCampo & " As " & tipoDadoControle)
     Next i
@@ -482,7 +516,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
         nomeCampo = controles(i, colunaCampo)
         nomeControle = ObtemNomeControle(nomeCampo, lstColunas.List(i - 1, colunaControle - 1))
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
-        nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & nomeCampo
+        nomeCampoPrivado = "m" & ObtemAcronimoTipo(tipoDadoControle) & RemoveAcentos(nomeCampo)
         Call InsertLine(classe, "")
         Call InsertLine(classe, "Private " & nomeCampoPrivado & " As " & tipoDadoControle)
     Next i

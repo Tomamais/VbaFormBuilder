@@ -21,6 +21,7 @@ Private Const colunaTipo As Integer = 2
 Private Const colunaRequerido As Integer = 3
 Private Const colunaEchave As Integer = 4
 Private Const colunaRotulo As Integer = 5
+Private Const colunaGerar As Integer = 6
 
 Private Sub btnConfigurarCampos_Click()
     Dim i As Integer, temChave As Boolean
@@ -82,19 +83,20 @@ End Sub
 
 Private Sub cboTabelas_Change()
     Dim i As Integer, j As Integer
-    lstCampos.ColumnCount = 5
+    lstCampos.ColumnCount = 6
     lstCampos.Clear
     
     For i = 1 To UBound(tabelas, 2)
         If tabelas(1, i) = cboTabelas.text Then
             Erase controles
-            ReDim controles(1 To UBound(tabelas(2, i), 2) + 1, 1 To 5)
+            ReDim controles(1 To UBound(tabelas(2, i), 2) + 1, 1 To 6)
                         
             controles(1, colunaCampo) = "Campo"
             controles(1, colunaTipo) = "Tipo"
             controles(1, colunaRequerido) = "Requerido"
             controles(1, colunaEchave) = "É chave?"
             controles(1, colunaRotulo) = "Rótulo"
+            controles(1, colunaGerar) = "Gerar?"
             
             For j = 1 To UBound(tabelas(2, i), 2)
                 controles(j + 1, colunaCampo) = tabelas(2, i)(colunaCampo, j)
@@ -102,6 +104,7 @@ Private Sub cboTabelas_Change()
                 controles(j + 1, colunaRequerido) = tabelas(2, i)(colunaRequerido, j)
                 controles(j + 1, colunaEchave) = tabelas(2, i)(colunaEchave, j)
                 controles(j + 1, colunaRotulo) = tabelas(2, i)(colunaRotulo, j)
+                controles(j + 1, colunaGerar) = "Sim"
             Next j
         End If
     Next i

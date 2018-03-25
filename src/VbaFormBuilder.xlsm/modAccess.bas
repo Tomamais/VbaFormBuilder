@@ -27,11 +27,11 @@ Public Sub CloseConnection()
 End Sub
 
 Public Function OpenFileDialog() As String
-    Dim Filter As String, Title As String
+    Dim filter As String, Title As String
     Dim FilterIndex As Integer
     Dim fileName As Variant
     ' Define o filtro de procura dos arquivos
-    Filter = "Microsoft Access (*.accdb),*.mdb,"
+    filter = "Microsoft Access (*.accdb),*.mdb,"
     ' O filtro padrão é *.*
     FilterIndex = 3
     ' Define o Título (Caption) da Tela
@@ -41,7 +41,7 @@ Public Function OpenFileDialog() As String
     ChDir ("C:\")
     With Application
         ' Abre a caixa de diálogo para seleção do arquivo com os parâmetros
-        fileName = .GetOpenFilename(Filter, FilterIndex, Title)
+        fileName = .GetOpenFilename(filter, FilterIndex, Title)
         ' Reseta o Path
         ChDrive (Left(.DefaultFilePath, 1))
         ChDir (.DefaultFilePath)
