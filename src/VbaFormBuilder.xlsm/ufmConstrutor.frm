@@ -453,28 +453,34 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     
     Dim qtdCamposAGerar As Integer
     For i = LBound(controles) To UBound(controles)
-        If lstColunas.List(i - 1, colunaGerar - 1) = "Sim" Then qtdCamposAGerar = qtdCamposAGerar + 1
+        If lstColunas.List(i - 1, colunaGerar - 1) <> "Não" Then qtdCamposAGerar = qtdCamposAGerar + 1
     Next i
     
-    'remove os campos que não serão gerados do array
-    Dim controlesAGerar()
-    
-    ReDim controlesAGerar(LBound(controles) To qtdCamposAGerar + 1, LBound(controles, 2) To UBound(controles, 2))
-    'copia as colunas
-    For i = LBound(controles, 2) To UBound(controles, 2)
-        controlesAGerar(1, i) = controles(1, i)
-    Next i
-    
-    'copia o resto
-    For i = LBound(controles) To UBound(controles)
-        If lstColunas.List(i - 1, colunaGerar - 1) = "Sim" Then
-            For j = LBound(controles, 2) To UBound(controles, 2)
-                controlesAGerar(i, j) = controles(i, j)
-            Next j
-        End If
-    Next i
-    
-    controles = controlesAGerar
+    'se houver campos a não gerar, aplica a lógica
+    If UBound(controles) - 1 <> qtdCamposAGerar Then
+        'remove os campos que não serão gerados do array
+        Dim controlesAGerar()
+        
+        ReDim controlesAGerar(LBound(controles) To qtdCamposAGerar, LBound(controles, 2) To UBound(controles, 2))
+        'copia as colunas
+        For i = LBound(controles, 2) To UBound(controles, 2)
+            controlesAGerar(1, i) = controles(1, i)
+        Next i
+        
+        'copia o resto
+        Dim controlesGerados As Integer
+        controlesGerados = 1
+        For i = LBound(controles) To UBound(controles)
+            If lstColunas.List(i - 1, colunaGerar - 1) <> "Não" Then
+                For j = LBound(controles, 2) To UBound(controles, 2)
+                    controlesAGerar(controlesGerados, j) = controles(i, j)
+                Next j
+                controlesGerados = controlesGerados + 1
+            End If
+        Next i
+        
+        controles = controlesAGerar
+    End If
     
     'gera a classe
     Dim modAuxiliar As VBComponent
