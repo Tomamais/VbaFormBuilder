@@ -457,7 +457,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Next i
     
     'se houver campos a não gerar, aplica a lógica
-    If UBound(controles) - 1 <> qtdCamposAGerar Then
+    If UBound(controles) <> qtdCamposAGerar Then
         'remove os campos que não serão gerados do array
         Dim controlesAGerar()
         
@@ -725,11 +725,17 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
             Exit Sub
         End If
     Next N
+    
+    Dim alturaForm As Long
+    alturaForm = lstColunas.ListCount * 45
+    
+    If alturaForm < 350 Then alturaForm = 350
+    
      
      'Cria o userform
     Set MyUserForm = newBook.VBProject.VBComponents.Add(vbext_ct_MSForm)
     With MyUserForm
-        .Properties("Height") = lstColunas.ListCount * 45
+        .Properties("Height") = alturaForm
         .Properties("Width") = 333
         On Error Resume Next
         .name = nomeForm
@@ -986,7 +992,6 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
         End If
     Next N
      
-    Dim alturaForm As Long
     alturaForm = lstColunas.ListCount * 45
      'Cria o userform
     Set UserFormPesquisa = newBook.VBProject.VBComponents.Add(vbext_ct_MSForm)
