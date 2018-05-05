@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 Private controles()
 Private arrayModuloForm(1 To 266)
 Private arrayModuloFuncaoLimpaControles(1 To 3)
@@ -373,13 +374,13 @@ Private Sub UserForm_Initialize()
 End Sub
 
 Private Sub cmdGerarFormulario_Click()
-    Dim nomeForm As String
-    nomeForm = txtNomeFormulario.text
-    If Trim(nomeForm) <> "" Then
+    Dim NomeForm As String
+    NomeForm = txtNomeFormulario.text
+    If Trim(NomeForm) <> "" Then
         If IsVarArrayEmpty(controles) Then
             MsgBox "E onde estão os campos?"
         Else
-            Call CriarForm(Trim(nomeForm))
+            Call CriarForm(Trim(NomeForm))
         End If
     Else
         MsgBox "O nome do formulário é requerido"
@@ -391,8 +392,8 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Dim newBook As Workbook
     Set newBook = Application.Workbooks.Add
     Dim MyUserForm As VBComponent
-    Dim nomeForm As String, nomeEntidadeComAcentos
-    nomeForm = RemoveAcentos(NomeEntidade)
+    Dim NomeForm As String, nomeEntidadeComAcentos
+    NomeForm = RemoveAcentos(NomeEntidade)
     nomeEntidadeComAcentos = NomeEntidade
     NomeEntidade = RemoveAcentos(NomeEntidade)
     
@@ -433,20 +434,20 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     'gera a classe
     Dim modEntidade As VBComponent
     Set modEntidade = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
-    modEntidade.name = "mod" & nomeForm
+    modEntidade.name = "mod" & NomeForm
     
-    Call InsertLine(modEntidade, "Sub AbreForm" & nomeForm & "()")
-    Call InsertLine(modEntidade, "    'variável do tipo da Classe " & nomeForm)
-    Call InsertLine(modEntidade, "    Dim udt" & nomeForm & " As " & nomeForm)
+    Call InsertLine(modEntidade, "Sub AbreForm" & NomeForm & "()")
+    Call InsertLine(modEntidade, "    'variável do tipo da Classe " & NomeForm)
+    Call InsertLine(modEntidade, "    Dim udt" & NomeForm & " As " & NomeForm)
     Call InsertLine(modEntidade, "    'Cria a isntância")
-    Call InsertLine(modEntidade, "    Set udt" & nomeForm & " = New " & nomeForm)
+    Call InsertLine(modEntidade, "    Set udt" & NomeForm & " = New " & NomeForm)
     Call InsertLine(modEntidade, "    ")
-    Call InsertLine(modEntidade, "    udt" & nomeForm & ".MoveLast")
-    Call InsertLine(modEntidade, "    udt" & nomeForm & ".MoveFirst")
-    Call InsertLine(modEntidade, "    'Atribui uma instância da classe " & nomeForm & " ao form")
-    Call InsertLine(modEntidade, "    ufm" & nomeForm & ".SetValues udt" & nomeForm)
+    Call InsertLine(modEntidade, "    udt" & NomeForm & ".MoveLast")
+    Call InsertLine(modEntidade, "    udt" & NomeForm & ".MoveFirst")
+    Call InsertLine(modEntidade, "    'Atribui uma instância da classe " & NomeForm & " ao form")
+    Call InsertLine(modEntidade, "    ufm" & NomeForm & ".SetValues udt" & NomeForm)
     Call InsertLine(modEntidade, "    'Mostra o form")
-    Call InsertLine(modEntidade, "    ufm" & nomeForm & ".Show")
+    Call InsertLine(modEntidade, "    ufm" & NomeForm & ".Show")
     Call InsertLine(modEntidade, "End Sub")
     
     countOfLines = 0
@@ -511,7 +512,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     'gera a classe
     Dim classe As VBComponent
     Set classe = newBook.VBProject.VBComponents.Add(vbext_ct_ClassModule)
-    classe.name = nomeForm
+    classe.name = NomeForm
     
     Call InsertLine(classe, "Private mrstRecordset As Recordset")
     Call InsertLine(classe, "Private mbooLoaded As Boolean")
@@ -716,11 +717,11 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(classe, "    Recordset.Filter = rFilter")
     Call InsertLine(classe, "End Property")
 
-    nomeForm = "ufm" & nomeForm
+    NomeForm = "ufm" & NomeForm
      
     'verifica se o formulário exite
     For N = 1 To newBook.VBProject.VBComponents.Count
-        If newBook.VBProject.VBComponents(N).name = nomeForm Then
+        If newBook.VBProject.VBComponents(N).name = NomeForm Then
             MsgBox "Já existe um formulário com o mesmo nome"
             Exit Sub
         End If
@@ -738,8 +739,8 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
         .Properties("Height") = alturaForm
         .Properties("Width") = 333
         On Error Resume Next
-        .name = nomeForm
-        .Properties("Caption") = "Formulário - " & nomeForm
+        .name = NomeForm
+        .Properties("Caption") = "Formulário - " & NomeForm
     End With
     
     'cria os controles referentes aos campos
@@ -982,7 +983,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     'Formulário de Pesquisa
     Dim NomeFormPesquisa As String
     Dim UserFormPesquisa As VBComponent
-    NomeFormPesquisa = nomeForm & "Pesquisa"
+    NomeFormPesquisa = NomeForm & "Pesquisa"
      
     'verifica se o formulário exite
     For N = 1 To newBook.VBProject.VBComponents.Count
@@ -1416,7 +1417,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     
     Debug.Print "CountOfLines :" & countOfLines
     
-    MsgBox nomeForm & " gerado com sucesso"
+    MsgBox NomeForm & " gerado com sucesso"
     Unload Me
     Unload ufmSelecionaBanco
 End Sub
