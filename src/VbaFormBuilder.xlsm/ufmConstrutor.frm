@@ -15,6 +15,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
 
+
 Private controles()
 Private arrayModuloForm(1 To 266)
 Private arrayModuloFuncaoLimpaControles(1 To 3)
@@ -500,7 +501,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Set modTypes = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
     modTypes.name = "modTypes"
     
-    Call InsertLine(modTypes, "Public Type Atendimento")
+    Call InsertLine(modTypes, "Public Type " & NomeForm)
     For i = 2 To UBound(controles)
         nomeCampo = RemoveAcentos(CStr(controles(i, colunaCampo)))
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
