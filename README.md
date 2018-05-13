@@ -4,12 +4,12 @@ Aplicativo inspirado no Modelo de Cadastro
 
 *Requisitos*
 
-* Macros ativadas (óbvio)
-* Confiança no projeto VBA ativado
-* Referências às bibliotecas:
-	** Microsoft Visual Basic for Applications Extensibility 5.3
-	** Microsoft Office 16.0 Access database engine Object
-	** Microsoft Scripting Runtime
++ Macros ativadas (óbvio)
++ Confiança no projeto VBA ativado
++ Referências às bibliotecas:
+	- Microsoft Visual Basic for Applications Extensibility 5.3
+	- Microsoft Office 16.0 Access database engine Object
+	- Microsoft Scripting Runtime
 
 *Compatibilidade*
 
