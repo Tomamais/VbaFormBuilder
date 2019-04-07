@@ -36,3 +36,4 @@ Este aplicativo foi criado no Excel 2016 e testado no Excel 2013 (32 e 64 bits).
 + Permitir configurar ID e VALUE para campos combobox tanto no cadastro como na pesquisa
 + Botões de navegação opcionais
 + Tratar campos de chave primária sem auto-numeração
++ Remover _ dos labels em formulários (baixa prioridade)

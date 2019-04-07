@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmSelecionaBancoNovo
    ClientHeight    =   6948
    ClientLeft      =   108
    ClientTop       =   456
-   ClientWidth     =   8184
+   ClientWidth     =   8904.001
    OleObjectBlob   =   "ufmSelecionaBancoNovo.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -119,6 +119,22 @@ Private Sub cboTabelas_Change()
     Next i
     
     lstCampos.List = controles
+End Sub
+
+Private Sub cmdLimparSelecao_Click()
+    If lstTabelas.ListCount > 0 Then
+        For i = 0 To lstTabelas.ListCount - 1
+            lstTabelas.Selected(i) = False
+        Next i
+    End If
+End Sub
+
+Private Sub cmdSelecionarTodos_Click()
+    If lstTabelas.ListCount > 0 Then
+        For i = 0 To lstTabelas.ListCount - 1
+            lstTabelas.Selected(i) = True
+        Next i
+    End If
 End Sub
 
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
