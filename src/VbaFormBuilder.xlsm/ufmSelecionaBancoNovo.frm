@@ -1,20 +1,18 @@
 VERSION 5.00
-Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmSelecionaBanco 
+Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmSelecionaBancoNovo 
    Caption         =   "Selecionar o banco de dados"
-   ClientHeight    =   4380
+   ClientHeight    =   6948
    ClientLeft      =   108
    ClientTop       =   456
-   ClientWidth     =   6468
-   OleObjectBlob   =   "ufmSelecionaBanco.frx":0000
+   ClientWidth     =   8184
+   OleObjectBlob   =   "ufmSelecionaBancoNovo.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
-Attribute VB_Name = "ufmSelecionaBanco"
+Attribute VB_Name = "ufmSelecionaBancoNovo"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-
-
 
 
 
@@ -83,6 +81,10 @@ Private Sub btnSelecionarArquivo_Click()
         For i = 1 To UBound(tabelas, 2)
             cboTabelas.AddItem tabelas(1, i)
         Next i
+        
+        Dim tabelasToListBox As Variant
+        tabelasToListBox = Array2DTranspose(tabelas)
+        lstTabelas.List = tabelasToListBox
     End If
     
     txtCaminhoBanco.text = caminhoArquivo

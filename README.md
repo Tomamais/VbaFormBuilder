@@ -21,7 +21,7 @@ Este aplicativo foi criado no Excel 2016 e testado no Excel 2013 (32 e 64 bits).
 * Ative a confiança no Projeto VBA
 * Clique no botão Importar Código e aguarde a finalização do processo
 * Clique em Iniciar
-* Siga as instruções nesse vídeo:
+* Siga as instruções deste vídeo:
  
 [![Alt text](https://img.youtube.com/vi/Wry1AWqUX0E/0.jpg)](https://www.youtube.com/watch?v=Wry1AWqUX0E)
 
@@ -35,3 +35,4 @@ Este aplicativo foi criado no Excel 2016 e testado no Excel 2013 (32 e 64 bits).
 	- Mesclar modTypes para todos os formulários gerados
 + Permitir configurar ID e VALUE para campos combobox tanto no cadastro como na pesquisa
 + Botões de navegação opcionais
++ Tratar campos de chave primária sem auto-numeração

@@ -68,3 +68,35 @@ Public Function CleanString(text As String) As String
     Next
     CleanString = output
 End Function
+
+Public Function Array2DTranspose(avValues As Variant) As Variant
+    Dim lThisCol As Long, lThisRow As Long
+    Dim lUb2 As Long, lLb2 As Long
+    Dim lUb1 As Long, lLb1 As Long
+    Dim avTransposed As Variant
+
+    If IsArray(avValues) Then
+        On Error GoTo ErrFailed
+        lUb2 = UBound(avValues, 2)
+        lLb2 = LBound(avValues, 2)
+        lUb1 = UBound(avValues, 1)
+        lLb1 = LBound(avValues, 1)
+
+        ReDim avTransposed(lLb2 To lUb2, lLb1 To lUb1)
+        For lThisCol = lLb1 To lUb1
+            For lThisRow = lLb2 To lUb2
+                avTransposed(lThisRow, lThisCol) = avValues(lThisCol, lThisRow)
+            Next
+        Next
+    End If
+
+    Array2DTranspose = avTransposed
+    Exit Function
+
+ErrFailed:
+    Debug.Print Err.Description
+    Debug.Assert False
+    Array2DTranspose = Empty
+    Exit Function
+    Resume
+End Function
