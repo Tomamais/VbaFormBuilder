@@ -38,7 +38,7 @@ Private Sub Init()
     arrayModuloForm(2) = "Private cls[NOME_ENTIDADE] As [NOME_ENTIDADE]"
     arrayModuloForm(3) = "Private modoEdicao As Boolean"
     arrayModuloForm(4) = ""
-    arrayModuloForm(5) = "Private Sub AlteraModo(ByVal Edicao As Boolean)"
+    arrayModuloForm(5) = "Private Sub ChangeMode(ByVal Edicao As Boolean)"
     arrayModuloForm(6) = "    Dim ctl As MSForms.Control"
     arrayModuloForm(7) = "    'controles de input"
     arrayModuloForm(8) = "    For Each ctl In Me.Controls"
@@ -95,16 +95,16 @@ Private Sub Init()
     arrayModuloForm(59) = "End Sub"
     arrayModuloForm(60) = ""
     arrayModuloForm(61) = "Private Sub optAlterar_Click()"
-    arrayModuloForm(62) = "    AlteraModo Edicao:=True"
+    arrayModuloForm(62) = "    ChangeMode Edicao:=True"
     arrayModuloForm(63) = "End Sub"
     arrayModuloForm(64) = ""
     arrayModuloForm(65) = "Private Sub optExcluir_Click()"
     arrayModuloForm(66) = "    lblStatus.Caption = ""Modo de exclusão"""
-    arrayModuloForm(67) = "    AlteraModo Edicao:=True"
+    arrayModuloForm(67) = "    ChangeMode Edicao:=True"
     arrayModuloForm(68) = "End Sub"
     arrayModuloForm(69) = ""
     arrayModuloForm(70) = "Private Sub optNovo_Click()"
-    arrayModuloForm(71) = "    AlteraModo Edicao:=True"
+    arrayModuloForm(71) = "    ChangeMode Edicao:=True"
     arrayModuloForm(72) = "    Call CleanControls"
     arrayModuloForm(73) = "    cls[NOME_ENTIDADE].AddNew"
     arrayModuloForm(74) = "End Sub"
@@ -112,11 +112,11 @@ Private Sub Init()
     arrayModuloForm(76) = "Private Sub UserForm_Initialize()"
     arrayModuloForm(77) = "    IsCancelled = True"
     arrayModuloForm(78) = "    "
-    arrayModuloForm(79) = "    AlteraModo Edicao:=False"
+    arrayModuloForm(79) = "    ChangeMode Edicao:=False"
     arrayModuloForm(80) = "End Sub"
     arrayModuloForm(81) = ""
     arrayModuloForm(82) = "Private Sub btnCancelar_Click()"
-    arrayModuloForm(83) = "    AlteraModo Edicao:=False"
+    arrayModuloForm(83) = "    ChangeMode Edicao:=False"
     arrayModuloForm(84) = "    cls[NOME_ENTIDADE].MovePrevious"
     arrayModuloForm(85) = "    Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(86) = "    'Me.Hide"
@@ -126,7 +126,7 @@ Private Sub Init()
     arrayModuloForm(90) = "    If optExcluir.Value Then"
     arrayModuloForm(91) = "        If MsgBox(""Deseja realmente excluir este registro?"", vbYesNo, ""Aviso de Exclusão"") = vbYes Then"
     arrayModuloForm(92) = "            cls[NOME_ENTIDADE].Delete"
-    arrayModuloForm(93) = "            AlteraModo Edicao:=False"
+    arrayModuloForm(93) = "            ChangeMode Edicao:=False"
     arrayModuloForm(94) = "            cls[NOME_ENTIDADE].MoveFirst"
     arrayModuloForm(95) = "            Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(96) = "        End If"
@@ -134,7 +134,7 @@ Private Sub Init()
     arrayModuloForm(98) = "        IsCancelled = False"
     arrayModuloForm(99) = "        Call GetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(100) = "        If cls[NOME_ENTIDADE].Update Then"
-    arrayModuloForm(101) = "            AlteraModo Edicao:=False"
+    arrayModuloForm(101) = "            ChangeMode Edicao:=False"
     arrayModuloForm(102) = "            cls[NOME_ENTIDADE].MoveFirst"
     arrayModuloForm(103) = "            Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(104) = "        End If"
@@ -441,7 +441,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     Set modEntidade = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
     modEntidade.name = "mod" & NomeEntidade
     
-    Call InsertLine(modEntidade, "Sub AbreForm" & NomeForm & "()")
+    Call InsertLine(modEntidade, "Sub OpenForm" & NomeForm & "()")
     Call InsertLine(modEntidade, "    'variável do tipo da Classe " & NomeForm)
     Call InsertLine(modEntidade, "    Dim udt" & NomeEntidade & " As " & NomeEntidade)
     Call InsertLine(modEntidade, "    'Cria a isntância")
@@ -489,40 +489,40 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     End If
     
     'gera a classe
-    Dim modAuxiliar As VBComponent
-    Set modAuxiliar = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
-    modAuxiliar.name = "modAuxiliar"
+    Dim modUtilities As VBComponent
+    Set modUtilities = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
+    modUtilities.name = "modUtilities"
     
-    Call InsertLine(modAuxiliar, "Public Function Nz(ByVal Value As Variant) As Variant")
-    Call InsertLine(modAuxiliar, "    If IsNull(Value) Then Value = 0")
-    Call InsertLine(modAuxiliar, "    Nz = Value")
-    Call InsertLine(modAuxiliar, "End Function")
+    Call InsertLine(modUtilities, "Public Function Nz(ByVal Value As Variant) As Variant")
+    Call InsertLine(modUtilities, "    If IsNull(Value) Then Value = 0")
+    Call InsertLine(modUtilities, "    Nz = Value")
+    Call InsertLine(modUtilities, "End Function")
     
-    Call InsertLine(modAuxiliar, "")
-    Call InsertLine(modAuxiliar, "Public Function ObtemCaminhoBancoDeDados() As String")
-    Call InsertLine(modAuxiliar, "    Dim caminhoCompleto As String")
-    Call InsertLine(modAuxiliar, "    Dim ARQUIVO_DADOS As String")
-    Call InsertLine(modAuxiliar, "    Dim PASTA_DADOS As String")
-    Call InsertLine(modAuxiliar, "    ")
-    Call InsertLine(modAuxiliar, "    abrirArquivo = True")
-    Call InsertLine(modAuxiliar, "    ")
-    Call InsertLine(modAuxiliar, "    ARQUIVO_DADOS = ThisWorkbook.Worksheets(""Config"").Range(""ARQUIVO"").Value")
-    Call InsertLine(modAuxiliar, "    PASTA_DADOS = ThisWorkbook.Worksheets(""Config"").Range(""PASTA"").Value")
-    Call InsertLine(modAuxiliar, "    ")
-    Call InsertLine(modAuxiliar, "    If ThisWorkbook.name <> ARQUIVO_DADOS Then")
-    Call InsertLine(modAuxiliar, "        'monta a string do caminho completo")
-    Call InsertLine(modAuxiliar, "        If PASTA_DADOS = vbNullString Or PASTA_DADOS = """" Then")
-    Call InsertLine(modAuxiliar, "            caminhoCompleto = Replace(ThisWorkbook.FullName, ThisWorkbook.name, vbNullString) & ARQUIVO_DADOS")
-    Call InsertLine(modAuxiliar, "        Else")
-    Call InsertLine(modAuxiliar, "            If Right(PASTA_DADOS, 1) = ""\"" Then")
-    Call InsertLine(modAuxiliar, "                caminhoCompleto = PASTA_DADOS & ARQUIVO_DADOS")
-    Call InsertLine(modAuxiliar, "            Else")
-    Call InsertLine(modAuxiliar, "                caminhoCompleto = PASTA_DADOS & ""\"" & ARQUIVO_DADOS")
-    Call InsertLine(modAuxiliar, "            End If")
-    Call InsertLine(modAuxiliar, "        End If")
-    Call InsertLine(modAuxiliar, "    End If")
-    Call InsertLine(modAuxiliar, "    ObtemCaminhoBancoDeDados = caminhoCompleto")
-    Call InsertLine(modAuxiliar, "End Function")
+    Call InsertLine(modUtilities, "")
+    Call InsertLine(modUtilities, "Public Function ObtemCaminhoBancoDeDados() As String")
+    Call InsertLine(modUtilities, "    Dim caminhoCompleto As String")
+    Call InsertLine(modUtilities, "    Dim ARQUIVO_DADOS As String")
+    Call InsertLine(modUtilities, "    Dim PASTA_DADOS As String")
+    Call InsertLine(modUtilities, "    ")
+    Call InsertLine(modUtilities, "    abrirArquivo = True")
+    Call InsertLine(modUtilities, "    ")
+    Call InsertLine(modUtilities, "    ARQUIVO_DADOS = ThisWorkbook.Worksheets(""Config"").Range(""ARQUIVO"").Value")
+    Call InsertLine(modUtilities, "    PASTA_DADOS = ThisWorkbook.Worksheets(""Config"").Range(""PASTA"").Value")
+    Call InsertLine(modUtilities, "    ")
+    Call InsertLine(modUtilities, "    If ThisWorkbook.name <> ARQUIVO_DADOS Then")
+    Call InsertLine(modUtilities, "        'monta a string do caminho completo")
+    Call InsertLine(modUtilities, "        If PASTA_DADOS = vbNullString Or PASTA_DADOS = """" Then")
+    Call InsertLine(modUtilities, "            caminhoCompleto = Replace(ThisWorkbook.FullName, ThisWorkbook.name, vbNullString) & ARQUIVO_DADOS")
+    Call InsertLine(modUtilities, "        Else")
+    Call InsertLine(modUtilities, "            If Right(PASTA_DADOS, 1) = ""\"" Then")
+    Call InsertLine(modUtilities, "                caminhoCompleto = PASTA_DADOS & ARQUIVO_DADOS")
+    Call InsertLine(modUtilities, "            Else")
+    Call InsertLine(modUtilities, "                caminhoCompleto = PASTA_DADOS & ""\"" & ARQUIVO_DADOS")
+    Call InsertLine(modUtilities, "            End If")
+    Call InsertLine(modUtilities, "        End If")
+    Call InsertLine(modUtilities, "    End If")
+    Call InsertLine(modUtilities, "    ObtemCaminhoBancoDeDados = caminhoCompleto")
+    Call InsertLine(modUtilities, "End Function")
 
 
     countOfLines = 0
@@ -1156,7 +1156,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub btnOK_Click()")
-    Call InsertLine(UserFormPesquisa, "    Call PreencheListBox")
+    Call InsertLine(UserFormPesquisa, "    Call FillListBox")
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub lst" & NomeEntidade & "_DblClick(ByVal Cancel As MSForms.ReturnBoolean)")
@@ -1179,10 +1179,10 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "    Set cls" & NomeEntidade & " = New " & NomeEntidade & "")
     Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".MoveLast")
     Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".MoveFirst")
-    Call InsertLine(UserFormPesquisa, "    Call PreencheListBox")
+    Call InsertLine(UserFormPesquisa, "    Call FillListBox")
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "Private Sub PreencheListBox()")
+    Call InsertLine(UserFormPesquisa, "Private Sub FillListBox()")
     Call InsertLine(UserFormPesquisa, "    Dim rstFiltro As Recordset")
     Call InsertLine(UserFormPesquisa, "    Dim arrayItems()")
     Call InsertLine(UserFormPesquisa, "    Dim filtros As String")
