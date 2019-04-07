@@ -15,10 +15,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Private controles()
 Private arrayModuloForm(1 To 266)
-Private arrayModuloFuncaoLimpaControles(1 To 3)
+Private arrayModuloFuncaoCleanControls(1 To 3)
 Private arrayModuloFuncaoControlDataType(1 To 6)
 Private arrayModuloFuncaoSetValues(1 To 7)
 Private arrayModuloFuncaoGetValues(1 To 6)
+Private arrayModuloFuncaoQueryClose(1 To 3)
 Private nomeCampoChavePrimaria As String
 Private countOfLines As Long
 Private Const colunaCampo As Integer = 1
@@ -104,7 +105,7 @@ Private Sub Init()
     arrayModuloForm(69) = ""
     arrayModuloForm(70) = "Private Sub optNovo_Click()"
     arrayModuloForm(71) = "    AlteraModo Edicao:=True"
-    arrayModuloForm(72) = "    Call LimpaControles"
+    arrayModuloForm(72) = "    Call CleanControls"
     arrayModuloForm(73) = "    cls[NOME_ENTIDADE].AddNew"
     arrayModuloForm(74) = "End Sub"
     arrayModuloForm(75) = ""
@@ -300,9 +301,9 @@ Private Sub Init()
     arrayModuloForm(265) = "    Resume HandleExit"
     arrayModuloForm(266) = "End Sub"
     
-    arrayModuloFuncaoLimpaControles(1) = "Public Sub LimpaControles()"
-    arrayModuloFuncaoLimpaControles(2) = "        SetValue Me.[NOME_CONTROLE], """""
-    arrayModuloFuncaoLimpaControles(3) = "End Sub"
+    arrayModuloFuncaoCleanControls(1) = "Public Sub CleanControls()"
+    arrayModuloFuncaoCleanControls(2) = "        SetValue Me.[NOME_CONTROLE], """""
+    arrayModuloFuncaoCleanControls(3) = "End Sub"
     
     arrayModuloFuncaoControlDataType(1) = "Private Function ControlDataType(ctl As MSForms.Control) As String"
     arrayModuloFuncaoControlDataType(2) = "    Select Case ctl.Name"
@@ -325,6 +326,11 @@ Private Sub Init()
     arrayModuloFuncaoGetValues(4) = "        .[NOME_CAMPO] = GetValue(Me.[NOME_CONTROLE], TypeName(.[NOME_CAMPO]))"
     arrayModuloFuncaoGetValues(5) = "    End With"
     arrayModuloFuncaoGetValues(6) = "End Sub"
+    
+    arrayModuloFuncaoQueryClose(1) = "Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)"
+    arrayModuloFuncaoQueryClose(2) = "    Set cls[NOME_ENTIDADE] = Nothing"
+    arrayModuloFuncaoQueryClose(3) = "End Sub"
+    
 End Sub
 
 Private Sub cboControle_Change()
@@ -900,19 +906,19 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
             Call InsertLine(MyUserForm, ReplaceToken(arrayModuloForm(i)))
         Next i
         
-        'função LimpaControles
+        'função CleanControls
         i = 1
-        While i <= UBound(arrayModuloFuncaoLimpaControles)
-            If InStr(1, arrayModuloFuncaoLimpaControles(i), "[NOME_CONTROLE]") > 0 Then
+        While i <= UBound(arrayModuloFuncaoCleanControls)
+            If InStr(1, arrayModuloFuncaoCleanControls(i), "[NOME_CONTROLE]") > 0 Then
                 'guarda a referencia da linha com o conteudo
                 linhaNomeControle = i
                 For j = 2 To UBound(controles)
                     nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
-                    linhaAInserir = Replace(arrayModuloFuncaoLimpaControles(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
+                    linhaAInserir = Replace(arrayModuloFuncaoCleanControls(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
                     Call InsertLine(MyUserForm, linhaAInserir)
                 Next j
             Else
-                Call InsertLine(MyUserForm, arrayModuloFuncaoLimpaControles(i))
+                Call InsertLine(MyUserForm, arrayModuloFuncaoCleanControls(i))
             End If
             i = i + 1
         Wend
@@ -974,6 +980,27 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
                 Next j
             Else
                 Call InsertLine(MyUserForm, ReplaceToken(arrayModuloFuncaoGetValues(i)))
+            End If
+            i = i + 1
+        Wend
+        
+        'função QueryClose
+        i = 1
+        While i <= UBound(arrayModuloFuncaoQueryClose)
+            If InStr(1, arrayModuloFuncaoQueryClose(i), "[NOME_CONTROLE]") > 0 Then
+                'guarda a referencia da linha com o conteudo
+                linhaNomeControle = i
+                For j = 2 To UBound(controles)
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
+                    nomeCampo = controles(j, colunaCampo)
+                        If nomeCampo <> ChavePrimaria Then
+                        linhaAInserir = Replace(arrayModuloFuncaoQueryClose(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
+                        linhaAInserir = Replace(linhaAInserir, "[NOME_CAMPO]", nomeCampo)
+                        Call InsertLine(MyUserForm, linhaAInserir)
+                    End If
+                Next j
+            Else
+                Call InsertLine(MyUserForm, ReplaceToken(arrayModuloFuncaoQueryClose(i)))
             End If
             i = i + 1
         Wend
@@ -1366,7 +1393,10 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "HandleError:")
     Call InsertLine(UserFormPesquisa, "    Resume HandleExit")
     Call InsertLine(UserFormPesquisa, "End Sub")
-    
+    Call InsertLine(UserFormPesquisa, "")
+    Call InsertLine(UserFormPesquisa, "Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)")
+    Call InsertLine(UserFormPesquisa, "    Set cls" & NomeEntidade & " = Nothing")
+    Call InsertLine(UserFormPesquisa, "End Sub")
     
     'Adiciona as referencias no novo arquivo
     Dim ref As Reference
