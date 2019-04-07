@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmSelecionaBanco
    ClientHeight    =   4380
    ClientLeft      =   108
    ClientTop       =   456
-   ClientWidth     =   6456
+   ClientWidth     =   6468
    OleObjectBlob   =   "ufmSelecionaBanco.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 
 
 
@@ -50,6 +51,7 @@ Private Sub btnConfigurarCampos_Click()
             ufmConstrutor.lstColunas.List(i, 1) = "TextBox"
         Next i
         ufmConstrutor.txtNomeFormulario.text = cboTabelas.text
+        ufmConstrutor.txtNomeTabela.text = cboTabelas.text
         Call ufmConstrutor.DefineControles(controles)
         ufmConstrutor.Show
     Else

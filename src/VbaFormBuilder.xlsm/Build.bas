@@ -19,7 +19,7 @@ Attribute VB_Name = "Build"
 
 Option Explicit
 
-
+'TODO: O nome está muito feio. Melhor mudar
 Private Const IMPORT_DELAY As String = "00:00:03"
 
 'We need to make these variables public such that they can be given as arguments to application.ontime()
@@ -89,7 +89,6 @@ Public Function getSourceDir(fullWorkbookPath As String, createIfNotExists As Bo
     End If
     getSourceDir = exportDir
 End Function
-
 
 ' Usually called after the given workbook is saved
 Public Sub exportVbaCode(vbaProject As VBProject)

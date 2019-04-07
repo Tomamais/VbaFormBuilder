@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmConstrutor 
    Caption         =   "Construtor de Formulários"
-   ClientHeight    =   4212
+   ClientHeight    =   4596
    ClientLeft      =   108
    ClientTop       =   456
    ClientWidth     =   7920
@@ -13,9 +13,6 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-
-
-
 Private controles()
 Private arrayModuloForm(1 To 266)
 Private arrayModuloFuncaoLimpaControles(1 To 3)
@@ -37,7 +34,7 @@ End Sub
 
 Private Sub Init()
     arrayModuloForm(1) = "Public IsCancelled As Boolean"
-    arrayModuloForm(2) = "Private cls[NOME_FORM] As [NOME_FORM]"
+    arrayModuloForm(2) = "Private cls[NOME_ENTIDADE] As [NOME_ENTIDADE]"
     arrayModuloForm(3) = "Private modoEdicao As Boolean"
     arrayModuloForm(4) = ""
     arrayModuloForm(5) = "Private Sub AlteraModo(ByVal Edicao As Boolean)"
@@ -75,7 +72,7 @@ Private Sub Init()
     arrayModuloForm(37) = "End Sub"
     arrayModuloForm(38) = ""
     arrayModuloForm(39) = "Private Sub btnAnterior_Click()"
-    arrayModuloForm(40) = "    If cls[NOME_FORM].MovePrevious Then Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(40) = "    If cls[NOME_ENTIDADE].MovePrevious Then Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(41) = "End Sub"
     arrayModuloForm(42) = ""
     arrayModuloForm(43) = "Private Sub btnPesquisar_Click()"
@@ -83,17 +80,17 @@ Private Sub Init()
     arrayModuloForm(45) = "End Sub"
     arrayModuloForm(46) = ""
     arrayModuloForm(47) = "Private Sub btnPrimeiro_Click()"
-    arrayModuloForm(48) = "    cls[NOME_FORM].MoveFirst"
-    arrayModuloForm(49) = "    Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(48) = "    cls[NOME_ENTIDADE].MoveFirst"
+    arrayModuloForm(49) = "    Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(50) = "End Sub"
     arrayModuloForm(51) = ""
     arrayModuloForm(52) = "Private Sub btnProximo_Click()"
-    arrayModuloForm(53) = "    If cls[NOME_FORM].MoveNext Then Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(53) = "    If cls[NOME_ENTIDADE].MoveNext Then Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(54) = "End Sub"
     arrayModuloForm(55) = ""
     arrayModuloForm(56) = "Private Sub btnUltimo_Click()"
-    arrayModuloForm(57) = "    cls[NOME_FORM].MoveLast"
-    arrayModuloForm(58) = "    Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(57) = "    cls[NOME_ENTIDADE].MoveLast"
+    arrayModuloForm(58) = "    Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(59) = "End Sub"
     arrayModuloForm(60) = ""
     arrayModuloForm(61) = "Private Sub optAlterar_Click()"
@@ -108,7 +105,7 @@ Private Sub Init()
     arrayModuloForm(70) = "Private Sub optNovo_Click()"
     arrayModuloForm(71) = "    AlteraModo Edicao:=True"
     arrayModuloForm(72) = "    Call LimpaControles"
-    arrayModuloForm(73) = "    cls[NOME_FORM].AddNew"
+    arrayModuloForm(73) = "    cls[NOME_ENTIDADE].AddNew"
     arrayModuloForm(74) = "End Sub"
     arrayModuloForm(75) = ""
     arrayModuloForm(76) = "Private Sub UserForm_Initialize()"
@@ -119,26 +116,26 @@ Private Sub Init()
     arrayModuloForm(81) = ""
     arrayModuloForm(82) = "Private Sub btnCancelar_Click()"
     arrayModuloForm(83) = "    AlteraModo Edicao:=False"
-    arrayModuloForm(84) = "    cls[NOME_FORM].MovePrevious"
-    arrayModuloForm(85) = "    Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(84) = "    cls[NOME_ENTIDADE].MovePrevious"
+    arrayModuloForm(85) = "    Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(86) = "    'Me.Hide"
     arrayModuloForm(87) = "End Sub"
     arrayModuloForm(88) = ""
     arrayModuloForm(89) = "Private Sub btnOK_Click()"
     arrayModuloForm(90) = "    If optExcluir.Value Then"
     arrayModuloForm(91) = "        If MsgBox(""Deseja realmente excluir este registro?"", vbYesNo, ""Aviso de Exclusão"") = vbYes Then"
-    arrayModuloForm(92) = "            cls[NOME_FORM].Delete"
+    arrayModuloForm(92) = "            cls[NOME_ENTIDADE].Delete"
     arrayModuloForm(93) = "            AlteraModo Edicao:=False"
-    arrayModuloForm(94) = "            cls[NOME_FORM].MoveFirst"
-    arrayModuloForm(95) = "            Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(94) = "            cls[NOME_ENTIDADE].MoveFirst"
+    arrayModuloForm(95) = "            Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(96) = "        End If"
     arrayModuloForm(97) = "    ElseIf IsInputOk Then"
     arrayModuloForm(98) = "        IsCancelled = False"
-    arrayModuloForm(99) = "        Call GetValues(cls[NOME_FORM])"
-    arrayModuloForm(100) = "        If cls[NOME_FORM].Update Then"
+    arrayModuloForm(99) = "        Call GetValues(cls[NOME_ENTIDADE])"
+    arrayModuloForm(100) = "        If cls[NOME_ENTIDADE].Update Then"
     arrayModuloForm(101) = "            AlteraModo Edicao:=False"
-    arrayModuloForm(102) = "            cls[NOME_FORM].MoveFirst"
-    arrayModuloForm(103) = "            Call SetValues(cls[NOME_FORM])"
+    arrayModuloForm(102) = "            cls[NOME_ENTIDADE].MoveFirst"
+    arrayModuloForm(103) = "            Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(104) = "        End If"
     arrayModuloForm(105) = "        'Me.Hide"
     arrayModuloForm(106) = "    End If"
@@ -314,16 +311,16 @@ Private Sub Init()
     arrayModuloFuncaoControlDataType(5) = "    End Select"
     arrayModuloFuncaoControlDataType(6) = "End Function"
     
-    arrayModuloFuncaoSetValues(1) = "Public Sub SetValues(udt[NOME_FORM] As [NOME_FORM])"
-    arrayModuloFuncaoSetValues(2) = "    With udt[NOME_FORM]"
+    arrayModuloFuncaoSetValues(1) = "Public Sub SetValues(udt[NOME_ENTIDADE] As [NOME_ENTIDADE])"
+    arrayModuloFuncaoSetValues(2) = "    With udt[NOME_ENTIDADE]"
     arrayModuloFuncaoSetValues(3) = "        SetValue Me.[NOME_CONTROLE], .[NOME_CAMPO]"
     arrayModuloFuncaoSetValues(4) = "    End With"
     arrayModuloFuncaoSetValues(5) = "    "
-    arrayModuloFuncaoSetValues(6) = "    Set cls[NOME_FORM] = udt[NOME_FORM]"
+    arrayModuloFuncaoSetValues(6) = "    Set cls[NOME_ENTIDADE] = udt[NOME_ENTIDADE]"
     arrayModuloFuncaoSetValues(7) = "End Sub"
     
-    arrayModuloFuncaoGetValues(1) = "Public Sub GetValues(ByRef udt[NOME_FORM] As [NOME_FORM])"
-    arrayModuloFuncaoGetValues(2) = "    With udt[NOME_FORM]"
+    arrayModuloFuncaoGetValues(1) = "Public Sub GetValues(ByRef udt[NOME_ENTIDADE] As [NOME_ENTIDADE])"
+    arrayModuloFuncaoGetValues(2) = "    With udt[NOME_ENTIDADE]"
     arrayModuloFuncaoGetValues(3) = "        '.Id = GetValue(Me.txtId, TypeName(.Id))"
     arrayModuloFuncaoGetValues(4) = "        .[NOME_CAMPO] = GetValue(Me.[NOME_CONTROLE], TypeName(.[NOME_CAMPO]))"
     arrayModuloFuncaoGetValues(5) = "    End With"
@@ -382,20 +379,20 @@ Private Sub cmdGerarFormulario_Click()
         If IsVarArrayEmpty(controles) Then
             MsgBox "E onde estão os campos?"
         Else
-            Call CriarForm(Trim(NomeForm))
+            Call CriarForm(Me.txtNomeTabela.text, Trim(RemoveAcentos(NomeForm)))
         End If
     Else
         MsgBox "O nome do formulário é requerido"
     End If
 End Sub
 
-Private Sub CriarForm(ByVal NomeEntidade As String)
+Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
      
     Dim newBook As Workbook
     Set newBook = Application.Workbooks.Add
     Dim MyUserForm As VBComponent
-    Dim NomeForm As String, nomeEntidadeComAcentos
-    NomeForm = RemoveAcentos(NomeEntidade)
+    Dim nomeEntidadeComAcentos As String
+    
     nomeEntidadeComAcentos = NomeEntidade
     NomeEntidade = RemoveAcentos(NomeEntidade)
     
@@ -436,18 +433,18 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     'gera a classe
     Dim modEntidade As VBComponent
     Set modEntidade = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
-    modEntidade.name = "mod" & NomeForm
+    modEntidade.name = "mod" & NomeEntidade
     
     Call InsertLine(modEntidade, "Sub AbreForm" & NomeForm & "()")
     Call InsertLine(modEntidade, "    'variável do tipo da Classe " & NomeForm)
-    Call InsertLine(modEntidade, "    Dim udt" & NomeForm & " As " & NomeForm)
+    Call InsertLine(modEntidade, "    Dim udt" & NomeEntidade & " As " & NomeEntidade)
     Call InsertLine(modEntidade, "    'Cria a isntância")
-    Call InsertLine(modEntidade, "    Set udt" & NomeForm & " = New " & NomeForm)
+    Call InsertLine(modEntidade, "    Set udt" & NomeEntidade & " = New " & NomeEntidade)
     Call InsertLine(modEntidade, "    ")
-    Call InsertLine(modEntidade, "    udt" & NomeForm & ".MoveLast")
-    Call InsertLine(modEntidade, "    udt" & NomeForm & ".MoveFirst")
+    Call InsertLine(modEntidade, "    udt" & NomeEntidade & ".MoveLast")
+    Call InsertLine(modEntidade, "    udt" & NomeEntidade & ".MoveFirst")
     Call InsertLine(modEntidade, "    'Atribui uma instância da classe " & NomeForm & " ao form")
-    Call InsertLine(modEntidade, "    ufm" & NomeForm & ".SetValues udt" & NomeForm)
+    Call InsertLine(modEntidade, "    ufm" & NomeForm & ".SetValues udt" & NomeEntidade)
     Call InsertLine(modEntidade, "    'Mostra o form")
     Call InsertLine(modEntidade, "    ufm" & NomeForm & ".Show")
     Call InsertLine(modEntidade, "End Sub")
@@ -501,7 +498,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Set modTypes = newBook.VBProject.VBComponents.Add(vbext_ct_StdModule)
     modTypes.name = "modTypes"
     
-    Call InsertLine(modTypes, "Public Type " & NomeForm)
+    Call InsertLine(modTypes, "Public Type " & NomeEntidade)
     For i = 2 To UBound(controles)
         nomeCampo = RemoveAcentos(CStr(controles(i, colunaCampo)))
         tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
@@ -514,7 +511,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     'gera a classe
     Dim classe As VBComponent
     Set classe = newBook.VBProject.VBComponents.Add(vbext_ct_ClassModule)
-    classe.name = NomeForm
+    classe.name = NomeEntidade
     
     Call InsertLine(classe, "Private mrstRecordset As Recordset")
     Call InsertLine(classe, "Private mbooLoaded As Boolean")
@@ -721,7 +718,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
 
     NomeForm = "ufm" & NomeForm
      
-    'verifica se o formulário exite
+    'verifica se o formulário existe
     For N = 1 To newBook.VBProject.VBComponents.Count
         If newBook.VBProject.VBComponents(N).name = NomeForm Then
             MsgBox "Já existe um formulário com o mesmo nome"
@@ -1105,9 +1102,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub btnOK_Click()")
-    Call InsertLine(UserFormPesquisa, "    If IsInputOk Then")
-    Call InsertLine(UserFormPesquisa, "        Call PreencheListBox")
-    Call InsertLine(UserFormPesquisa, "    End If")
+    Call InsertLine(UserFormPesquisa, "    Call PreencheListBox")
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub lst" & NomeEntidade & "_DblClick(ByVal Cancel As MSForms.ReturnBoolean)")
@@ -1118,7 +1113,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(UserFormPesquisa, "        cls" & NomeEntidade & ".MoveFirst")
     Call InsertLine(UserFormPesquisa, "        Do")
     Call InsertLine(UserFormPesquisa, "            If cls" & NomeEntidade & "." & ChavePrimaria & " = " & ChavePrimaria & " Then")
-    Call InsertLine(UserFormPesquisa, "                ufm" & NomeEntidade & ".SetValues cls" & NomeEntidade & "")
+    Call InsertLine(UserFormPesquisa, "                " & NomeForm & ".SetValues cls" & NomeEntidade & "")
     Call InsertLine(UserFormPesquisa, "                Unload Me")
     Call InsertLine(UserFormPesquisa, "                Exit Do")
     Call InsertLine(UserFormPesquisa, "            End If")
@@ -1207,7 +1202,12 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     For i = 2 To UBound(controles)
         nomeCampo = controles(i, colunaCampo)
         nomeRotulo = controles(i, colunaRotulo)
-        Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = rstFiltro(""[" & nomeRotulo & "]"")")
+        tipoDadoControle = ObtemTipoDadoCampo(controles(i, colunaControle))
+        If tipoDadoControle = "Boolean" Then
+            Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = IIf(rstFiltro(""[" & nomeCampo & "]"") ,""Sim"",""Não"")")
+        Else
+            Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = rstFiltro(""[" & nomeCampo & "]"")")
+        End If
     Next i
     
     Call InsertLine(UserFormPesquisa, "        linha = linha + 1")
@@ -1219,36 +1219,6 @@ Private Sub CriarForm(ByVal NomeEntidade As String)
     Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".Filter = """)
     Call InsertLine(UserFormPesquisa, "    Set rstFiltro = Nothing")
     Call InsertLine(UserFormPesquisa, "End Sub")
-    Call InsertLine(UserFormPesquisa, "")
-    Call InsertLine(UserFormPesquisa, "Private Function IsInputOk() As Boolean")
-    Call InsertLine(UserFormPesquisa, "Dim ctl As MSForms.Control")
-    Call InsertLine(UserFormPesquisa, "Dim strMessage As String")
-    Call InsertLine(UserFormPesquisa, "    IsInputOk = False")
-    Call InsertLine(UserFormPesquisa, "    For Each ctl In Me.Controls")
-    Call InsertLine(UserFormPesquisa, "        If IsInputControl(ctl) Then")
-    Call InsertLine(UserFormPesquisa, "            If IsRequired(ctl) Then")
-    Call InsertLine(UserFormPesquisa, "                If Not HasValue(ctl) Then")
-    Call InsertLine(UserFormPesquisa, "                    strMessage = ControlName(ctl) & "" é obrigatório""")
-    Call InsertLine(UserFormPesquisa, "                End If")
-    Call InsertLine(UserFormPesquisa, "            End If")
-    Call InsertLine(UserFormPesquisa, "            If HasValue(ctl) Then")
-    Call InsertLine(UserFormPesquisa, "                If Not IsCorrectType(ctl) Then")
-    Call InsertLine(UserFormPesquisa, "                    strMessage = ControlName(ctl) & "" é inválido""")
-    Call InsertLine(UserFormPesquisa, "                End If")
-    Call InsertLine(UserFormPesquisa, "            End If")
-    Call InsertLine(UserFormPesquisa, "        End If")
-    Call InsertLine(UserFormPesquisa, "        If Len(strMessage) > 0 Then")
-    Call InsertLine(UserFormPesquisa, "            ctl.SetFocus")
-    Call InsertLine(UserFormPesquisa, "            GoTo HandleMessage")
-    Call InsertLine(UserFormPesquisa, "        End If")
-    Call InsertLine(UserFormPesquisa, "    Next")
-    Call InsertLine(UserFormPesquisa, "    IsInputOk = True")
-    Call InsertLine(UserFormPesquisa, "HandleExit:")
-    Call InsertLine(UserFormPesquisa, "    Exit Function")
-    Call InsertLine(UserFormPesquisa, "HandleMessage:")
-    Call InsertLine(UserFormPesquisa, "    MsgBox strMessage")
-    Call InsertLine(UserFormPesquisa, "    GoTo HandleExit")
-    Call InsertLine(UserFormPesquisa, "End Function")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Public Sub FillList(ControlName As String, Values As Variant)")
     Call InsertLine(UserFormPesquisa, "    With Me.Controls(ControlName)")
@@ -1432,6 +1402,8 @@ End Sub
 
 Private Function ReplaceToken(ByVal text As String)
     Dim i As Integer
+    '[NOME_ENTIDADE]
+    text = Replace(text, "[NOME_ENTIDADE]", Trim(RemoveAcentos(txtNomeTabela.text)))
     '[NOME_FORM]
     text = Replace(text, "[NOME_FORM]", Trim(RemoveAcentos(txtNomeFormulario.text)))
     '[CHAVE_PRIMARIA]
@@ -1518,6 +1490,7 @@ Private Function ObtemTipoDadoCampo(ByVal tipo As String) As String
         Case Else
             tipo = "Variant"
     End Select
+
     ObtemTipoDadoCampo = tipo
 End Function
 
