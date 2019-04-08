@@ -1,18 +1,22 @@
 VERSION 5.00
-Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmSelecionaBanco 
+Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmSelecionaBancoMultiplo 
    Caption         =   "Selecionar o banco de dados"
-   ClientHeight    =   4425
+   ClientHeight    =   6930
    ClientLeft      =   90
-   ClientTop       =   360
-   ClientWidth     =   6465
-   OleObjectBlob   =   "ufmSelecionaBanco.frx":0000
+   ClientTop       =   375
+   ClientWidth     =   8940.001
+   OleObjectBlob   =   "ufmSelecionaBancoMultiplo.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
-Attribute VB_Name = "ufmSelecionaBanco"
+Attribute VB_Name = "ufmSelecionaBancoMultiplo"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
+
+
+
 Private caminhoArquivo As String
 Private tabelas()
 Private controles()
@@ -50,13 +54,6 @@ Private Sub btnConfigurarCampos_Click()
         ufmConstrutor.txtNomeTabela.text = cboTabelas.text
         Call ufmConstrutor.DefineControles(controles)
         Call ufmConstrutor.DefineTabelas(tabelas)
-        
-        For i = 1 To UBound(tabelas, 2)
-            ufmConstrutor.cboTabelasFK.AddItem tabelas(1, i)
-        Next i
-        
-        ufmConstrutor.lstColunas.ListIndex = 1
-        
         ufmConstrutor.Show
     Else
         MsgBox "Não há campos para gerar o form"
@@ -85,6 +82,10 @@ Private Sub btnSelecionarArquivo_Click()
         For i = 1 To UBound(tabelas, 2)
             cboTabelas.AddItem tabelas(1, i)
         Next i
+        
+        Dim tabelasToListBox As Variant
+        tabelasToListBox = Array2DTranspose(tabelas)
+        lstTabelas.List = tabelasToListBox
     End If
     
     txtCaminhoBanco.text = caminhoArquivo
@@ -119,6 +120,26 @@ Private Sub cboTabelas_Change()
     Next i
     
     lstCampos.List = controles
+End Sub
+
+Private Sub cmdLimparSelecao_Click()
+    If lstTabelas.ListCount > 0 Then
+        For i = 0 To lstTabelas.ListCount - 1
+            lstTabelas.Selected(i) = False
+        Next i
+    End If
+End Sub
+
+Private Sub cmdSelecionarTodos_Click()
+    If lstTabelas.ListCount > 0 Then
+        For i = 0 To lstTabelas.ListCount - 1
+            lstTabelas.Selected(i) = True
+        Next i
+    End If
+End Sub
+
+Private Sub lstTabelas_Change()
+    
 End Sub
 
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)

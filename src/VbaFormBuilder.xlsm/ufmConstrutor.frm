@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmConstrutor 
    Caption         =   "Construtor de Formulários"
-   ClientHeight    =   4596
-   ClientLeft      =   108
-   ClientTop       =   456
-   ClientWidth     =   7920
+   ClientHeight    =   5355
+   ClientLeft      =   90
+   ClientTop       =   360
+   ClientWidth     =   11820
    OleObjectBlob   =   "ufmConstrutor.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -13,7 +13,9 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+Private tabelas()
 Private controles()
+Private fks()
 Private arrayModuloForm(1 To 266)
 Private arrayModuloFuncaoCleanControls(1 To 3)
 Private arrayModuloFuncaoControlDataType(1 To 6)
@@ -29,8 +31,39 @@ Private Const colunaEchave As Integer = 4
 Private Const colunaRotulo As Integer = 5
 Private Const colunaGerar As Integer = 6
 
+Private Const colunaFKCampo As Integer = 1
+Private Const colunaFKTabela As Integer = 2
+Private Const colunaFKID As Integer = 3
+Private Const colunaFKValor As Integer = 4
+Private Const colunaEFK As Integer = 5
+
+Public Sub DefineTabelas(ByRef pTabelas())
+     tabelas = pTabelas
+End Sub
+
 Public Sub DefineControles(ByRef pControles())
-     controles = pControles
+    controles = pControles
+    
+    Dim i As Integer, j As Integer
+    'cria uma fk para cada coluna
+    
+    Erase fks
+    ReDim fks(1 To UBound(controles, 1) + 1, 1 To 5)
+               
+    fks(1, colunaFKCampo) = "Campo"
+    fks(1, colunaFKTabela) = "Tabela"
+    fks(1, colunaFKID) = "ID"
+    fks(1, colunaFKValor) = "Valor"
+    fks(1, colunaEFK) = "É FK"
+    
+    For j = 2 To UBound(controles, 1)
+       fks(j, colunaFKCampo) = controles(j, colunaFKCampo)
+       fks(j, colunaFKTabela) = "" 'controles(j, colunaFKTabela)
+       fks(j, colunaFKID) = "" 'controles(j, colunaFKID)
+       fks(j, colunaFKValor) = "" 'controles(j, colunaFKValor)
+       fks(j, colunaEFK) = "Não"
+    Next j
+    
 End Sub
 
 Private Sub Init()
@@ -340,6 +373,14 @@ Private Sub cboControle_Change()
     End If
 End Sub
 
+Private Sub cboTabelasFK_Change()
+    
+End Sub
+
+Private Sub cbxFK_Change()
+    frameFK.Enabled = cbxFK.Value
+End Sub
+
 Private Sub cbxGerar_Click()
     If lstColunas.ListIndex > 0 Then
         Linha = lstColunas.ListIndex
@@ -375,6 +416,7 @@ Private Sub UserForm_Initialize()
     cboControle.AddItem "ComboBox"
     cboControle.AddItem "CheckBox"
     cboControle.AddItem "OptionButtion"
+    
     Call Init
 End Sub
 
@@ -1210,7 +1252,11 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
             If tipoDadoControle = "String" Then
                 Call InsertLine(UserFormPesquisa, "    If Trim(" & nomeControle & ".Text) <> """" Then")
                 Call InsertLine(UserFormPesquisa, "        If filtros <> """" Then filtros = filtros & "" AND """)
-                Call InsertLine(UserFormPesquisa, "        filtros = filtros & ""[" & nomeRotulo & "] LIKE '*"" & Trim(" & nomeControle & ".Text) & ""*'""")
+                If tipoControle = "ComboBox" Then
+                    Call InsertLine(UserFormPesquisa, "        filtros = filtros & ""[" & nomeRotulo & "] LIKE '*"" & Trim(" & nomeControle & ".Value) & ""*'""")
+                Else
+                    Call InsertLine(UserFormPesquisa, "        filtros = filtros & ""[" & nomeRotulo & "] LIKE '*"" & Trim(" & nomeControle & ".Text) & ""*'""")
+                End If
                 Call InsertLine(UserFormPesquisa, "    End If")
                 Call InsertLine(UserFormPesquisa, "")
             ElseIf tipoDadoControle = "Date" Then
