@@ -4,7 +4,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmConstrutor
    ClientHeight    =   5352
    ClientLeft      =   96
    ClientTop       =   360
-   ClientWidth     =   11820
+   ClientWidth     =   10992
    OleObjectBlob   =   "ufmConstrutor.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -373,14 +373,6 @@ Private Sub cboControle_Change()
     End If
 End Sub
 
-Private Sub cboFKID_Change()
-    fks(lstColunas.ListIndex + 1, colunaFKID) = cboFKID.Value
-End Sub
-
-Private Sub cboFKValor_Change()
-    fks(lstColunas.ListIndex + 1, colunaFKValor) = cboFKValor.Value
-End Sub
-
 Private Sub cboTabelasFK_Change()
     Dim i As Integer, j As Integer
     
@@ -395,10 +387,6 @@ Private Sub cboTabelasFK_Change()
             Next j
         End If
     Next i
-    
-    fks(lstColunas.ListIndex + 1, colunaFKTabela) = cboTabelasFK.Value
-    cboFKID.Value = fks(lstColunas.ListIndex + 1, colunaFKID)
-    cboFKValor.Value = fks(lstColunas.ListIndex + 1, colunaFKValor)
 End Sub
 
 Private Sub cbxFK_Change()
@@ -425,6 +413,12 @@ Private Sub cbxRequerido_Click()
     End If
 End Sub
 
+Private Sub cmdConfirmarFK_Click()
+    fks(lstColunas.ListIndex + 1, colunaFKTabela) = cboTabelasFK.Value
+    fks(lstColunas.ListIndex + 1, colunaFKID) = cboFKID.Value
+    fks(lstColunas.ListIndex + 1, colunaFKValor) = cboFKValor.Value
+End Sub
+
 Private Sub lstColunas_Click()
     Dim Linha As Long
     If lstColunas.ListIndex > 0 Then
@@ -442,6 +436,8 @@ Private Sub lstColunas_Click()
         'campos FK
         cbxFK.Value = IIf(fks(lstColunas.ListIndex + 1, colunaEFK) = "Sim", True, False)
         cboTabelasFK.Value = fks(lstColunas.ListIndex + 1, colunaFKTabela)
+        cboFKID.Value = fks(lstColunas.ListIndex + 1, colunaFKID)
+        cboFKValor.Value = fks(lstColunas.ListIndex + 1, colunaFKValor)
     End If
 End Sub
 
