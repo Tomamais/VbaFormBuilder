@@ -48,7 +48,7 @@ Public Sub DefineControles(ByRef pControles())
     'cria uma fk para cada coluna
     
     Erase fks
-    ReDim fks(1 To UBound(controles, 1) + 1, 1 To 5)
+    ReDim fks(1 To UBound(controles, 1), 1 To 5)
                
     fks(1, colunaFKCampo) = "Campo"
     fks(1, colunaFKTabela) = "Tabela"
@@ -144,7 +144,7 @@ Private Sub Init()
     arrayModuloForm(75) = ""
     arrayModuloForm(76) = "Private Sub UserForm_Initialize()"
     arrayModuloForm(77) = "    IsCancelled = True"
-    arrayModuloForm(78) = "    "
+    arrayModuloForm(78) = "    Call LoadDependentCombos"
     arrayModuloForm(79) = "    ChangeMode Edicao:=False"
     arrayModuloForm(80) = "End Sub"
     arrayModuloForm(81) = ""
@@ -1103,6 +1103,42 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
             End If
             i = i + 1
         Wend
+        
+        'LoadDependentCombox
+        Call InsertLine(MyUserForm, "Private Sub LoadDependentCombos()")
+        Call InsertLine(MyUserForm, "   Dim filtros As String")
+        For i = 2 To UBound(fks, 2)
+            If fks(i, colunaEFK) = "Sim" Then
+                Call InsertLine(MyUserForm, "   '" & fks(i, colunaFKTabela))
+                Call InsertLine(MyUserForm, "   Dim cls" & fks(i, colunaFKTabela) & " As " & fks(i, colunaFKTabela))
+                Call InsertLine(MyUserForm, "   Set cls" & fks(i, colunaFKTabela) & " = New " & fks(i, colunaFKTabela))
+                Call InsertLine(MyUserForm, "   ")
+                Call InsertLine(MyUserForm, "   Me.cbo" & fks(i, colunaFKCampo) & ".Clear")
+                Call InsertLine(MyUserForm, "   'filtros = filtros & ""[ATIVO] = True""")
+                Call InsertLine(MyUserForm, "   cls" & fks(i, colunaFKTabela) & ".Filter = filtros")
+                Call InsertLine(MyUserForm, "   Set rstFiltro = cls" & fks(i, colunaFKTabela) & ".RecordSetWithFilter")
+                Call InsertLine(MyUserForm, "   ")
+                Call InsertLine(MyUserForm, "   ReDim arrayItems(1 To rstFiltro.RecordCount, 1 To 2)")
+                Call InsertLine(MyUserForm, "   ")
+                Call InsertLine(MyUserForm, "   linha = 1")
+                Call InsertLine(MyUserForm, "   'linhas")
+                Call InsertLine(MyUserForm, "   Do While Not rstFiltro.EOF")
+                Call InsertLine(MyUserForm, "       arrayItems(linha, 1) = rstFiltro(""" & fks(i, colunaFKID) & """)")
+                Call InsertLine(MyUserForm, "       arrayItems(linha, 2) = rstFiltro(""" & fks(i, colunaFKValor) & """)")
+                Call InsertLine(MyUserForm, "       linha = linha + 1")
+                Call InsertLine(MyUserForm, "       rstFiltro.MoveNext")
+                Call InsertLine(MyUserForm, "   Loop")
+                Call InsertLine(MyUserForm, "   ")
+                Call InsertLine(MyUserForm, "   Me.cbo" & fks(i, colunaFKCampo) & ".List = arrayItems")
+                Call InsertLine(MyUserForm, "   ")
+                Call InsertLine(MyUserForm, "   rstFiltro.Close")
+                Call InsertLine(MyUserForm, "   Set rstFiltro = Nothing")
+                Call InsertLine(MyUserForm, "   Set cls" & fks(i, colunaFKTabela) & " = Nothing")
+                Call InsertLine(MyUserForm, "   Erase arrayItems")
+                Call InsertLine(MyUserForm, "   filtros = """"")
+            End If
+        Next i
+        Call InsertLine(MyUserForm, "End Sub")
     End With
     
     'Formulário de Pesquisa
