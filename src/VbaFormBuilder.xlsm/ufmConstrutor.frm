@@ -1,8 +1,8 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmConstrutor 
    Caption         =   "Construtor de Formulários"
-   ClientHeight    =   5355
-   ClientLeft      =   90
+   ClientHeight    =   5352
+   ClientLeft      =   96
    ClientTop       =   360
    ClientWidth     =   11820
    OleObjectBlob   =   "ufmConstrutor.frx":0000
@@ -373,12 +373,42 @@ Private Sub cboControle_Change()
     End If
 End Sub
 
+Private Sub cboFKID_Change()
+    fks(lstColunas.ListIndex + 1, colunaFKID) = cboFKID.Value
+End Sub
+
+Private Sub cboFKValor_Change()
+    fks(lstColunas.ListIndex + 1, colunaFKValor) = cboFKValor.Value
+End Sub
+
 Private Sub cboTabelasFK_Change()
+    Dim i As Integer, j As Integer
     
+    For i = 1 To UBound(tabelas, 2)
+        If tabelas(1, i) = cboTabelasFK.Value Then
+            cboFKID.Clear
+            cboFKValor.Clear
+                        
+            For j = 1 To UBound(tabelas(2, i), 2)
+                cboFKID.AddItem tabelas(2, i)(colunaCampo, j)
+                cboFKValor.AddItem tabelas(2, i)(colunaCampo, j)
+            Next j
+        End If
+    Next i
+    
+    fks(lstColunas.ListIndex + 1, colunaFKTabela) = cboTabelasFK.Value
+    cboFKID.Value = fks(lstColunas.ListIndex + 1, colunaFKID)
+    cboFKValor.Value = fks(lstColunas.ListIndex + 1, colunaFKValor)
 End Sub
 
 Private Sub cbxFK_Change()
     frameFK.Enabled = cbxFK.Value
+    fks(lstColunas.ListIndex + 1, colunaEFK) = IIf(cbxFK.Value, "Sim", "Não")
+    
+    'força a seleção do ComboBox caso seja selecionada a opção de FK
+    If cbxFK.Value Then
+        cboControle.Value = "ComboBox"
+    End If
 End Sub
 
 Private Sub cbxGerar_Click()
@@ -408,6 +438,10 @@ Private Sub lstColunas_Click()
         cboControle.Enabled = Not eChave
         cbxRequerido.Enabled = Not eChave
         cbxGerar.Value = (lstColunas.List(Linha, 5) = "Sim")
+        
+        'campos FK
+        cbxFK.Value = IIf(fks(lstColunas.ListIndex + 1, colunaEFK) = "Sim", True, False)
+        cboTabelasFK.Value = fks(lstColunas.ListIndex + 1, colunaFKTabela)
     End If
 End Sub
 

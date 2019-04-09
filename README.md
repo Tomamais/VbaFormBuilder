@@ -29,7 +29,7 @@ Este aplicativo foi criado no Excel 2016 e testado no Excel 2013 (32 e 64 bits).
 
 + No form de pesquisa (checar o de cadastro), usar a propriedade Value ao invés do text
 + Permitir selecionar mais de uma tabela a gerar formulários
-	- Transformar o comboBox o comboBox de tabelas em um listbox multiselecao (ideal auto-selecionar as tabelas com relacao direta
+	- Transformar o comboBox o comboBox de tabelas em um listbox multiselecao (ideal auto-selecionar as tabelas com relacao direta)
 	- Adicionar função LoadDependentCombos
 	- Adicionar classes dependentes na função acima (limpeza no queryclose idem)
 	- Mesclar modTypes para todos os formulários gerados

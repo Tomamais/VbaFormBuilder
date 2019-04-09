@@ -1,9 +1,9 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmSelecionaBancoMultiplo 
    Caption         =   "Selecionar o banco de dados"
-   ClientHeight    =   6930
-   ClientLeft      =   90
-   ClientTop       =   375
+   ClientHeight    =   6936
+   ClientLeft      =   96
+   ClientTop       =   372
    ClientWidth     =   8940.001
    OleObjectBlob   =   "ufmSelecionaBancoMultiplo.frx":0000
    StartUpPosition =   1  'CenterOwner
