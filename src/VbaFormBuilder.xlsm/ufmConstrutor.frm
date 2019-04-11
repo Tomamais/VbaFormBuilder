@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmConstrutor 
    Caption         =   "Construtor de Formulários"
-   ClientHeight    =   5352
-   ClientLeft      =   96
+   ClientHeight    =   5355
+   ClientLeft      =   90
    ClientTop       =   360
-   ClientWidth     =   10992
+   ClientWidth     =   10995
    OleObjectBlob   =   "ufmConstrutor.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -872,15 +872,30 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
             .Height = alturaControle
             .Width = larguraControle
         End With
-        'Controle
-        Set TextBox = MyUserForm.Designer.Controls.Add("Forms." & tipoControle & ".1")
-        With TextBox
-            .name = nomeControle
-            .Left = margemEsquerda
-            .Top = margemTopo + alturaControle + distanciaEntre
-            .Height = alturaControle
-            .Width = larguraControle
-        End With
+        
+        If fks(i, colunaEFK) = "Sim" Then
+            'ComboBox FK
+            Set TextBox = MyUserForm.Designer.Controls.Add("Forms.ComboBox.1")
+            With TextBox
+                .name = nomeControle
+                .Left = margemEsquerda
+                .Top = margemTopo + alturaControle + distanciaEntre
+                .Height = alturaControle
+                .Width = larguraControle
+                .ColumnCount = 2
+                .ColumnWidths = "0pt;100pt"
+            End With
+        Else
+            'Controle
+            Set TextBox = MyUserForm.Designer.Controls.Add("Forms." & tipoControle & ".1")
+            With TextBox
+                .name = nomeControle
+                .Left = margemEsquerda
+                .Top = margemTopo + alturaControle + distanciaEntre
+                .Height = alturaControle
+                .Width = larguraControle
+            End With
+        End If
         
         margemTopo = margemTopo + margeTopoInicial + (alturaControle * 2)
     Next i
@@ -1104,7 +1119,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
             i = i + 1
         Wend
         
-        'LoadDependentCombox
+        'LoadDependentCombobox
         Call InsertLine(MyUserForm, "Private Sub LoadDependentCombos()")
         Call InsertLine(MyUserForm, "   Dim filtros As String")
         For i = 2 To UBound(fks, 2)
@@ -1214,15 +1229,29 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
                 .Height = alturaControle
                 .Width = larguraControle
             End With
-            'Controle
-            Set TextBox = UserFormPesquisa.Designer.Controls.Add("Forms." & tipoControle & ".1")
-            With TextBox
-                .name = nomeControle
-                .Left = margemEsquerda
-                .Top = margemTopo + alturaControle + distanciaEntre
-                .Height = alturaControle
-                .Width = larguraControle
-            End With
+            If fks(i, colunaEFK) = "Sim" Then
+                'ComboBox FK
+                Set TextBox = UserFormPesquisa.Designer.Controls.Add("Forms.ComboBox.1")
+                With TextBox
+                    .name = nomeControle
+                    .Left = margemEsquerda
+                    .Top = margemTopo + alturaControle + distanciaEntre
+                    .Height = alturaControle
+                    .Width = larguraControle
+                    .ColumnCount = 2
+                    .ColumnWidths = "0pt;100pt"
+                End With
+            Else
+                'Controle
+                Set TextBox = UserFormPesquisa.Designer.Controls.Add("Forms." & tipoControle & ".1")
+                With TextBox
+                    .name = nomeControle
+                    .Left = margemEsquerda
+                    .Top = margemTopo + alturaControle + distanciaEntre
+                    .Height = alturaControle
+                    .Width = larguraControle
+                End With
+            End If
         End If
         
         margemTopo = margemTopo + margeTopoInicial + (alturaControle * 2)
@@ -1259,6 +1288,12 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     
     Call InsertLine(UserFormPesquisa, "Private cls" & NomeEntidade & " As " & NomeEntidade)
     Call InsertLine(UserFormPesquisa, "")
+    For i = 2 To UBound(fks, 2)
+        If fks(i, colunaEFK) = "Sim" Then
+            Call InsertLine(UserFormPesquisa, "Private array" & fks(i, colunaFKTabela) & "() As String")
+        End If
+    Next i
+    Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub btnCancelar_Click()")
     Call InsertLine(UserFormPesquisa, "    Unload Me")
     Call InsertLine(UserFormPesquisa, "End Sub")
@@ -1287,6 +1322,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "    Set cls" & NomeEntidade & " = New " & NomeEntidade & "")
     Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".MoveLast")
     Call InsertLine(UserFormPesquisa, "    cls" & NomeEntidade & ".MoveFirst")
+    Call InsertLine(UserFormPesquisa, "    Call LoadDependentCombos")
     Call InsertLine(UserFormPesquisa, "    Call FillListBox")
     Call InsertLine(UserFormPesquisa, "End Sub")
     Call InsertLine(UserFormPesquisa, "")
@@ -1372,7 +1408,11 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
         If tipoDadoControle = "Boolean" Then
             Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = IIf(rstFiltro(""[" & nomeCampo & "]"") ,""Sim"",""Não"")")
         Else
-            Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = rstFiltro(""[" & nomeCampo & "]"")")
+            If fks(i, colunaEFK) = "" Then
+                Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = LookUpArray(rstFiltro(""[" & nomeCampo & "]""), array" & fks(i, colunaFKTabela) & ")")
+            Else
+                Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = rstFiltro(""[" & nomeCampo & "]"")")
+            End If
         End If
     Next i
     
@@ -1535,6 +1575,64 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)")
     Call InsertLine(UserFormPesquisa, "    Set cls" & NomeEntidade & " = Nothing")
+    For i = 2 To UBound(fks, 2)
+        If fks(i, colunaEFK) = "Sim" Then
+            Call InsertLine(UserFormPesquisa, "    Erase array" & fks(i, colunaFKTabela))
+        End If
+    Next i
+    Call InsertLine(UserFormPesquisa, "End Sub")
+    
+    Call InsertLine(UserFormPesquisa, "Public Function LookUpArray(ByVal LookUpValue As String, ByRef arrayItems() As String) As String")
+    Call InsertLine(UserFormPesquisa, "    Dim FoundValue As String")
+    Call InsertLine(UserFormPesquisa, "    ")
+    Call InsertLine(UserFormPesquisa, "    For i = 1 To UBound(arrayItems, 1)")
+    Call InsertLine(UserFormPesquisa, "        If arrayItems(i, 1) = LookUpValue Then")
+    Call InsertLine(UserFormPesquisa, "            FoundValue = arrayItems(i, 2)")
+    Call InsertLine(UserFormPesquisa, "            Exit For")
+    Call InsertLine(UserFormPesquisa, "        End If")
+    Call InsertLine(UserFormPesquisa, "    Next i")
+    Call InsertLine(UserFormPesquisa, "    ")
+    Call InsertLine(UserFormPesquisa, "    LookUpArray = FoundValue")
+    Call InsertLine(UserFormPesquisa, "End Function")
+    
+    'LoadDependentCombobox
+    Call InsertLine(UserFormPesquisa, "Private Sub LoadDependentCombos()")
+    Call InsertLine(UserFormPesquisa, "   Dim rstFiltro As Recordset")
+    Call InsertLine(UserFormPesquisa, "   Dim arrayItems() As String")
+    Call InsertLine(UserFormPesquisa, "   Dim filtros As String")
+    Call InsertLine(UserFormPesquisa, "   Dim linha As Long")
+    For i = 2 To UBound(fks, 2)
+        If fks(i, colunaEFK) = "Sim" Then
+            Call InsertLine(UserFormPesquisa, "   '" & fks(i, colunaFKTabela))
+            Call InsertLine(UserFormPesquisa, "   Dim cls" & fks(i, colunaFKTabela) & " As " & fks(i, colunaFKTabela))
+            Call InsertLine(UserFormPesquisa, "   Set cls" & fks(i, colunaFKTabela) & " = New " & fks(i, colunaFKTabela))
+            Call InsertLine(UserFormPesquisa, "   ")
+            Call InsertLine(UserFormPesquisa, "   Me.cbo" & fks(i, colunaFKCampo) & ".Clear")
+            Call InsertLine(UserFormPesquisa, "   'filtros = filtros & ""[ATIVO] = True""")
+            Call InsertLine(UserFormPesquisa, "   cls" & fks(i, colunaFKTabela) & ".Filter = filtros")
+            Call InsertLine(UserFormPesquisa, "   Set rstFiltro = cls" & fks(i, colunaFKTabela) & ".RecordSetWithFilter")
+            Call InsertLine(UserFormPesquisa, "   ")
+            Call InsertLine(UserFormPesquisa, "   ReDim arrayItems(1 To rstFiltro.RecordCount, 1 To 2)")
+            Call InsertLine(UserFormPesquisa, "   ")
+            Call InsertLine(UserFormPesquisa, "   linha = 1")
+            Call InsertLine(UserFormPesquisa, "   'linhas")
+            Call InsertLine(UserFormPesquisa, "   Do While Not rstFiltro.EOF")
+            Call InsertLine(UserFormPesquisa, "       arrayItems(linha, 1) = rstFiltro(""" & fks(i, colunaFKID) & """)")
+            Call InsertLine(UserFormPesquisa, "       arrayItems(linha, 2) = rstFiltro(""" & fks(i, colunaFKValor) & """)")
+            Call InsertLine(UserFormPesquisa, "       linha = linha + 1")
+            Call InsertLine(UserFormPesquisa, "       rstFiltro.MoveNext")
+            Call InsertLine(UserFormPesquisa, "   Loop")
+            Call InsertLine(UserFormPesquisa, "   ")
+            Call InsertLine(UserFormPesquisa, "   Me.cbo" & fks(i, colunaFKCampo) & ".List = arrayItems")
+            Call InsertLine(UserFormPesquisa, "   ")
+            Call InsertLine(UserFormPesquisa, "   rstFiltro.Close")
+            Call InsertLine(UserFormPesquisa, "   Set rstFiltro = Nothing")
+            Call InsertLine(UserFormPesquisa, "   Set cls" & fks(i, colunaFKTabela) & " = Nothing")
+            Call InsertLine(UserFormPesquisa, "   array" & fks(i, colunaFKTabela) & " = arrayItems")
+            Call InsertLine(UserFormPesquisa, "   Erase arrayItems")
+            Call InsertLine(UserFormPesquisa, "   filtros = """"")
+        End If
+    Next i
     Call InsertLine(UserFormPesquisa, "End Sub")
     
     'Adiciona as referencias no novo arquivo
