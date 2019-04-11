@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmConstrutor 
    Caption         =   "Construtor de Formulários"
-   ClientHeight    =   5355
-   ClientLeft      =   90
-   ClientTop       =   360
-   ClientWidth     =   10995
+   ClientHeight    =   6690
+   ClientLeft      =   120
+   ClientTop       =   480
+   ClientWidth     =   13740
    OleObjectBlob   =   "ufmConstrutor.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -22,6 +22,7 @@ Private arrayModuloFuncaoControlDataType(1 To 6)
 Private arrayModuloFuncaoSetValues(1 To 7)
 Private arrayModuloFuncaoGetValues(1 To 6)
 Private arrayModuloFuncaoQueryClose(1 To 3)
+Private arrayModuloFuncaoChangeMode(1 To 33)
 Private nomeCampoChavePrimaria As String
 Private countOfLines As Long
 Private Const colunaCampo As Integer = 1
@@ -71,40 +72,6 @@ Private Sub Init()
     arrayModuloForm(2) = "Private cls[NOME_ENTIDADE] As [NOME_ENTIDADE]"
     arrayModuloForm(3) = "Private modoEdicao As Boolean"
     arrayModuloForm(4) = ""
-    arrayModuloForm(5) = "Private Sub ChangeMode(ByVal Edicao As Boolean)"
-    arrayModuloForm(6) = "    Dim ctl As MSForms.Control"
-    arrayModuloForm(7) = "    'controles de input"
-    arrayModuloForm(8) = "    For Each ctl In Me.Controls"
-    arrayModuloForm(9) = "        If IsInputControl(ctl) Then"
-    arrayModuloForm(10) = "           ctl.Enabled = Edicao"
-    arrayModuloForm(11) = "        End If"
-    arrayModuloForm(12) = "    Next"
-    arrayModuloForm(13) = "    "
-    arrayModuloForm(14) = "    'excessão"
-    arrayModuloForm(15) = "    txt[CHAVE_PRIMARIA].Enabled = False"
-    arrayModuloForm(16) = "    "
-    arrayModuloForm(17) = "    'botoes de navegacao"
-    arrayModuloForm(18) = "    btnOk.Enabled = Edicao"
-    arrayModuloForm(19) = "    btnCancelar.Enabled = Edicao"
-    arrayModuloForm(20) = "    btnPrimeiro.Enabled = Not Edicao"
-    arrayModuloForm(21) = "    btnAnterior.Enabled = Not Edicao"
-    arrayModuloForm(22) = "    btnProximo.Enabled = Not Edicao"
-    arrayModuloForm(23) = "    btnUltimo.Enabled = Not Edicao"
-    arrayModuloForm(24) = "    'os options buttons de operacao"
-    arrayModuloForm(25) = "    optAlterar.Enabled = Not Edicao"
-    arrayModuloForm(26) = "    optExcluir.Enabled = Not Edicao"
-    arrayModuloForm(27) = "    optNovo.Enabled = Not Edicao"
-    arrayModuloForm(28) = "   "
-    arrayModuloForm(29) = "    If Not Edicao Then"
-    arrayModuloForm(30) = "        optAlterar.Value = False"
-    arrayModuloForm(31) = "        optExcluir.Value = False"
-    arrayModuloForm(32) = "        optNovo.Value = False"
-    arrayModuloForm(33) = "        lblStatus.Caption = """""
-    arrayModuloForm(34) = "    End If"
-    arrayModuloForm(35) = "    "
-    arrayModuloForm(36) = "    modoEdicao = Edicao"
-    arrayModuloForm(37) = "End Sub"
-    arrayModuloForm(38) = ""
     arrayModuloForm(39) = "Private Sub btnAnterior_Click()"
     arrayModuloForm(40) = "    If cls[NOME_ENTIDADE].MovePrevious Then Call SetValues(cls[NOME_ENTIDADE])"
     arrayModuloForm(41) = "End Sub"
@@ -334,6 +301,40 @@ Private Sub Init()
     arrayModuloForm(265) = "    Resume HandleExit"
     arrayModuloForm(266) = "End Sub"
     
+    arrayModuloFuncaoChangeMode(1) = "Private Sub ChangeMode(ByVal Edicao As Boolean)"
+    arrayModuloFuncaoChangeMode(2) = "    Dim ctl As MSForms.Control"
+    arrayModuloFuncaoChangeMode(3) = "    'controles de input"
+    arrayModuloFuncaoChangeMode(4) = "    For Each ctl In Me.Controls"
+    arrayModuloFuncaoChangeMode(5) = "        If IsInputControl(ctl) Then"
+    arrayModuloFuncaoChangeMode(6) = "           ctl.Enabled = Edicao"
+    arrayModuloFuncaoChangeMode(7) = "        End If"
+    arrayModuloFuncaoChangeMode(8) = "    Next"
+    arrayModuloFuncaoChangeMode(9) = "    "
+    arrayModuloFuncaoChangeMode(10) = "    'excessão"
+    arrayModuloFuncaoChangeMode(11) = "    txt[CHAVE_PRIMARIA].Enabled = False"
+    arrayModuloFuncaoChangeMode(12) = "    "
+    arrayModuloFuncaoChangeMode(13) = "    'botoes de navegacao"
+    arrayModuloFuncaoChangeMode(14) = "    btnOk.Enabled = Edicao"
+    arrayModuloFuncaoChangeMode(15) = "    btnCancelar.Enabled = Edicao"
+    arrayModuloFuncaoChangeMode(16) = "    btnPrimeiro.Enabled = Not Edicao '[NAVEGACAO]"
+    arrayModuloFuncaoChangeMode(17) = "    btnAnterior.Enabled = Not Edicao '[NAVEGACAO]"
+    arrayModuloFuncaoChangeMode(18) = "    btnProximo.Enabled = Not Edicao '[NAVEGACAO]"
+    arrayModuloFuncaoChangeMode(19) = "    btnUltimo.Enabled = Not Edicao '[NAVEGACAO]"
+    arrayModuloFuncaoChangeMode(20) = "    'os options buttons de operacao"
+    arrayModuloFuncaoChangeMode(21) = "    optAlterar.Enabled = Not Edicao"
+    arrayModuloFuncaoChangeMode(22) = "    optExcluir.Enabled = Not Edicao"
+    arrayModuloFuncaoChangeMode(23) = "    optNovo.Enabled = Not Edicao"
+    arrayModuloFuncaoChangeMode(24) = "   "
+    arrayModuloFuncaoChangeMode(25) = "    If Not Edicao Then"
+    arrayModuloFuncaoChangeMode(26) = "        optAlterar.Value = False"
+    arrayModuloFuncaoChangeMode(27) = "        optExcluir.Value = False"
+    arrayModuloFuncaoChangeMode(28) = "        optNovo.Value = False"
+    arrayModuloFuncaoChangeMode(29) = "        lblStatus.Caption = """""
+    arrayModuloFuncaoChangeMode(30) = "    End If"
+    arrayModuloFuncaoChangeMode(31) = "    "
+    arrayModuloFuncaoChangeMode(32) = "    modoEdicao = Edicao"
+    arrayModuloFuncaoChangeMode(33) = "End Sub"
+    
     arrayModuloFuncaoCleanControls(1) = "Public Sub CleanControls()"
     arrayModuloFuncaoCleanControls(2) = "        SetValue Me.[NOME_CONTROLE], """""
     arrayModuloFuncaoCleanControls(3) = "End Sub"
@@ -368,8 +369,8 @@ End Sub
 
 Private Sub cboControle_Change()
     If lstColunas.ListIndex > 0 Then
-        Linha = lstColunas.ListIndex
-        lstColunas.List(Linha, 1) = cboControle.text
+        linha = lstColunas.ListIndex
+        lstColunas.List(linha, 1) = cboControle.text
     End If
 End Sub
 
@@ -401,15 +402,15 @@ End Sub
 
 Private Sub cbxGerar_Click()
     If lstColunas.ListIndex > 0 Then
-        Linha = lstColunas.ListIndex
-        lstColunas.List(Linha, 5) = IIf(cbxGerar.Value, "Sim", "Não")
+        linha = lstColunas.ListIndex
+        lstColunas.List(linha, 5) = IIf(cbxGerar.Value, "Sim", "Não")
     End If
 End Sub
 
 Private Sub cbxRequerido_Click()
     If lstColunas.ListIndex > 0 Then
-        Linha = lstColunas.ListIndex
-        lstColunas.List(Linha, 2) = IIf(cbxRequerido.Value, "Sim", "Não")
+        linha = lstColunas.ListIndex
+        lstColunas.List(linha, 2) = IIf(cbxRequerido.Value, "Sim", "Não")
     End If
 End Sub
 
@@ -420,18 +421,18 @@ Private Sub cmdConfirmarFK_Click()
 End Sub
 
 Private Sub lstColunas_Click()
-    Dim Linha As Long
+    Dim linha As Long
     If lstColunas.ListIndex > 0 Then
-        Linha = lstColunas.ListIndex
-        txtNome.text = lstColunas.List(Linha, 0)
-        cboControle.text = lstColunas.List(Linha, 1)
-        cbxRequerido.Value = IIf(lstColunas.List(Linha, 2) = "Sim", True, False)
+        linha = lstColunas.ListIndex
+        txtNome.text = lstColunas.List(linha, 0)
+        cboControle.text = lstColunas.List(linha, 1)
+        cbxRequerido.Value = IIf(lstColunas.List(linha, 2) = "Sim", True, False)
         
         Dim eChave As Boolean
-        eChave = (lstColunas.List(Linha, 3) = "Sim")
+        eChave = (lstColunas.List(linha, 3) = "Sim")
         cboControle.Enabled = Not eChave
         cbxRequerido.Enabled = Not eChave
-        cbxGerar.Value = (lstColunas.List(Linha, 5) = "Sim")
+        cbxGerar.Value = (lstColunas.List(linha, 5) = "Sim")
         
         'campos FK
         cbxFK.Value = IIf(fks(lstColunas.ListIndex + 1, colunaEFK) = "Sim", True, False)
@@ -973,45 +974,48 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
         .Top = 168
     End With
     
-    Set btnPrimeiro = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
-    With btnPrimeiro
-        .name = "btnPrimeiro"
-        .Caption = "Primeiro"
-        .Height = 24
-        .Width = 72
-        .Left = 234
-        .Top = 198
-    End With
-    
-    Set btnAnterior = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
-    With btnAnterior
-        .name = "btnAnterior"
-        .Caption = "Anterior"
-        .Height = 24
-        .Width = 72
-        .Left = 234
-        .Top = 228
-    End With
-    
-    Set btnProximo = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
-    With btnProximo
-        .name = "btnProximo"
-        .Caption = "Próximo"
-        .Height = 24
-        .Width = 72
-        .Left = 234
-        .Top = 258
-    End With
-    
-    Set btnUltimo = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
-    With btnUltimo
-        .name = "btnUltimo"
-        .Caption = "Último"
-        .Height = 24
-        .Width = 72
-        .Left = 234
-        .Top = 288
-    End With
+    If ckbGerarBotoesDeNavegacao.Value Then
+        
+        Set btnPrimeiro = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+        With btnPrimeiro
+            .name = "btnPrimeiro"
+            .Caption = "Primeiro"
+            .Height = 24
+            .Width = 72
+            .Left = 234
+            .Top = 198
+        End With
+        
+        Set btnAnterior = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+        With btnAnterior
+            .name = "btnAnterior"
+            .Caption = "Anterior"
+            .Height = 24
+            .Width = 72
+            .Left = 234
+            .Top = 228
+        End With
+        
+        Set btnProximo = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+        With btnProximo
+            .name = "btnProximo"
+            .Caption = "Próximo"
+            .Height = 24
+            .Width = 72
+            .Left = 234
+            .Top = 258
+        End With
+        
+        Set btnUltimo = MyUserForm.Designer.Controls.Add("forms.CommandButton.1")
+        With btnUltimo
+            .name = "btnUltimo"
+            .Caption = "Último"
+            .Height = 24
+            .Width = 72
+            .Left = 234
+            .Top = 288
+        End With
+    End If
     
     'código do form
     With MyUserForm.CodeModule
@@ -1033,6 +1037,27 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
                 Next j
             Else
                 Call InsertLine(MyUserForm, arrayModuloFuncaoCleanControls(i))
+            End If
+            i = i + 1
+        Wend
+        
+        'função ChangeMode
+        i = 1
+        While i <= UBound(arrayModuloFuncaoChangeMode)
+            If InStr(1, arrayModuloFuncaoChangeMode(i), "[NOME_CONTROLE]") > 0 Then
+                'guarda a referencia da linha com o conteudo
+                linhaNomeControle = i
+                For j = 2 To UBound(controles)
+                    nomeControle = ObtemNomeControle(controles(j, colunaCampo), lstColunas.List(j - 1, colunaControle - 1))
+                    linhaAInserir = Replace(arrayModuloFuncaoChangeMode(linhaNomeControle), "[NOME_CONTROLE]", nomeControle)
+                    Call InsertLine(MyUserForm, ReplaceToken(linhaAInserir))
+                Next j
+            Else
+                If InStr(1, arrayModuloFuncaoChangeMode(i), "[NAVEGACAO]") > 0 Then
+                    If ckbGerarBotoesDeNavegacao.Value Then Call InsertLine(MyUserForm, arrayModuloFuncaoChangeMode(i))
+                Else
+                    Call InsertLine(MyUserForm, ReplaceToken(arrayModuloFuncaoChangeMode(i)))
+                End If
             End If
             i = i + 1
         Wend
@@ -1121,7 +1146,11 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
         
         'LoadDependentCombobox
         Call InsertLine(MyUserForm, "Private Sub LoadDependentCombos()")
+        Call InsertLine(MyUserForm, "   Dim rstFiltro As Recordset")
+        Call InsertLine(MyUserForm, "   Dim arrayItems() As String")
         Call InsertLine(MyUserForm, "   Dim filtros As String")
+        Call InsertLine(MyUserForm, "   Dim linha As Long")
+    
         For i = 2 To UBound(fks, 2)
             If fks(i, colunaEFK) = "Sim" Then
                 Call InsertLine(MyUserForm, "   '" & fks(i, colunaFKTabela))
@@ -1304,8 +1333,8 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "Private Sub lst" & NomeEntidade & "_DblClick(ByVal Cancel As MSForms.ReturnBoolean)")
     Call InsertLine(UserFormPesquisa, "    If lst" & NomeEntidade & ".ListIndex > 0 Then")
-    Call InsertLine(UserFormPesquisa, "        Dim " & ChavePrimaria & " As Long")
-    Call InsertLine(UserFormPesquisa, "        " & ChavePrimaria & " = CLng(lst" & NomeEntidade & ".List(lst" & NomeEntidade & ".ListIndex, 0))")
+    Call InsertLine(UserFormPesquisa, "        Dim " & ChavePrimaria)
+    Call InsertLine(UserFormPesquisa, "        " & ChavePrimaria & " = lst" & NomeEntidade & ".List(lst" & NomeEntidade & ".ListIndex, 0)")
     Call InsertLine(UserFormPesquisa, "")
     Call InsertLine(UserFormPesquisa, "        cls" & NomeEntidade & ".MoveFirst")
     Call InsertLine(UserFormPesquisa, "        Do")
@@ -1408,7 +1437,7 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
         If tipoDadoControle = "Boolean" Then
             Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = IIf(rstFiltro(""[" & nomeCampo & "]"") ,""Sim"",""Não"")")
         Else
-            If fks(i, colunaEFK) = "" Then
+            If fks(i, colunaEFK) = "Sim" Then
                 Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = LookUpArray(rstFiltro(""[" & nomeCampo & "]""), array" & fks(i, colunaFKTabela) & ")")
             Else
                 Call InsertLine(UserFormPesquisa, "        arrayItems(linha, " & i - 1 & ") = rstFiltro(""[" & nomeCampo & "]"")")
@@ -1661,9 +1690,9 @@ Private Sub CriarForm(ByVal NomeEntidade As String, ByVal NomeForm As String)
     Unload ufmSelecionaBanco
 End Sub
 
-Private Sub InsertLine(ByRef componente As VBComponent, ByVal Linha As String)
+Private Sub InsertLine(ByRef componente As VBComponent, ByVal linha As String)
     countOfLines = countOfLines + 1
-    Call componente.CodeModule.InsertLines(countOfLines, Linha)
+    Call componente.CodeModule.InsertLines(countOfLines, linha)
     'Debug.Print Linha
 End Sub
 
@@ -1781,3 +1810,16 @@ Private Function ObtemAcronimoTipo(ByVal tipo As String) As String
     End Select
     ObtemAcronimoTipo = tipo
 End Function
+
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    Erase tabelas
+    Erase controles
+    Erase fks
+    Erase arrayModuloForm
+    Erase arrayModuloFuncaoCleanControls
+    Erase arrayModuloFuncaoControlDataType
+    Erase arrayModuloFuncaoSetValues
+    Erase arrayModuloFuncaoGetValues
+    Erase arrayModuloFuncaoQueryClose
+    Erase arrayModuloFuncaoChangeMode
+End Sub

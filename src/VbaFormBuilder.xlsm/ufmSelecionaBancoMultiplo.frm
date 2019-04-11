@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ufmSelecionaBancoMultiplo 
    Caption         =   "Selecionar o banco de dados"
-   ClientHeight    =   6930
-   ClientLeft      =   90
-   ClientTop       =   375
-   ClientWidth     =   8940.001
+   ClientHeight    =   8655.001
+   ClientLeft      =   120
+   ClientTop       =   495
+   ClientWidth     =   11175
    OleObjectBlob   =   "ufmSelecionaBancoMultiplo.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -28,6 +28,14 @@ Private Const colunaRotulo As Integer = 5
 Private Const colunaGerar As Integer = 6
 
 Private Sub btnConfigurarCampos_Click()
+    Dim tabelasSelecionadas() As String
+    
+    If lstTabelas.ListCount > 0 Then
+        For i = 0 To lstTabelas.ListCount - 1
+            lstTabelas.Selected(i) = True
+        Next i
+    End If
+
     Dim i As Integer, temChave As Boolean
     'só segue em frente se tiver pelo menos um campo de chave primária
     For i = 2 To UBound(controles)
@@ -54,6 +62,13 @@ Private Sub btnConfigurarCampos_Click()
         ufmConstrutor.txtNomeTabela.text = cboTabelas.text
         Call ufmConstrutor.DefineControles(controles)
         Call ufmConstrutor.DefineTabelas(tabelas)
+        
+        For i = 1 To UBound(tabelas, 2)
+            ufmConstrutor.cboTabelasFK.AddItem tabelas(1, i)
+        Next i
+        
+        ufmConstrutor.lstColunas.ListIndex = 1
+        
         ufmConstrutor.Show
     Else
         MsgBox "Não há campos para gerar o form"
@@ -136,10 +151,6 @@ Private Sub cmdSelecionarTodos_Click()
             lstTabelas.Selected(i) = True
         Next i
     End If
-End Sub
-
-Private Sub lstTabelas_Change()
-    
 End Sub
 
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
